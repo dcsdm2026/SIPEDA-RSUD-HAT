@@ -1,73 +1,62 @@
 // === FILE: app/login.js ===
-// Logika Proses Login & Pengarahan Berdasarkan Hak Akses
 
 async function handleLogin(event) {
     event.preventDefault();
-
+    
     const usernameInput = document.getElementById('username').value.trim();
     const passwordInput = document.getElementById('password').value.trim();
-    const alertBox = document.getElementById('loginAlert');
     const btnLogin = document.getElementById('btnLogin');
-
-    if (alertBox) alertBox.classList.add('hidden');
+    const alertBox = document.getElementById('loginAlert');
 
     if (!usernameInput || !passwordInput) {
-        showAlert('Harap isi Email/NIK dan Kata Sandi!', 'red');
+        showAlert('Email/NIK dan Password wajib diisi!', 'error');
         return;
     }
 
+    // Ubah tampilan tombol menjadi loading
     btnLogin.disabled = true;
-    btnLogin.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memverifikasi...`;
+    btnLogin.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-sm"></i> <span>Memproses...</span>`;
+    alertBox.classList.add('hidden');
 
     try {
         if (!window.db) {
-            throw new Error("Koneksi Supabase belum siap. Periksa app/koneksi.js!");
+            throw new Error("Koneksi database belum siap. Periksa app/koneksi.js Anda.");
         }
 
-        // Cari pegawai berdasarkan email atau NIK
+        // Cari pegawai berdasarkan email ATAU NIK
         const { data, error } = await window.db
             .from('pegawai')
             .select('*')
             .or(`email.eq.${usernameInput},nik.eq.${usernameInput}`)
             .maybeSingle();
 
-        if (error) {
-            throw new Error(`Database Error (${error.code}): ${error.message}`);
-        }
+        if (error) throw error;
 
         if (!data) {
-            showAlert('Email atau NIK tidak terdaftar dalam sistem.', 'red');
-            resetBtn();
+            showAlert('Akun tidak ditemukan. Periksa Email atau NIK Anda.', 'error');
+            resetButton();
             return;
         }
 
-        // Verifikasi Kata Sandi
-        const passwordDatabase = data.password || data.nik;
-
-        if (passwordInput !== passwordDatabase) {
-            showAlert('Kata sandi yang Anda masukkan salah.', 'red');
-            resetBtn();
+        // Cek password sederhanakan (atau perbandingan default)
+        // Catatan: Pastikan kolom password sesuai di database Supabase Anda
+        const passDiDB = data.password || data.nik; 
+        if (passwordInput !== passDiDB) {
+            showAlert('Kata sandi yang Anda masukkan salah!', 'error');
+            resetButton();
             return;
         }
 
-        // Simpan sesi login ke LocalStorage
-        const userRole = (data.aksesrole || 'user').toLowerCase();
-        const userSession = {
-            nik: data.nik,
-            nama: data.nama,
-            email: data.email,
-            aksesrole: userRole,
-            jabatan: data.jabatan,
-            foto: data.upload_foto
-        };
-        localStorage.setItem('sipeda_user', JSON.stringify(userSession));
+        // Simpan sesi user ke localStorage
+        localStorage.setItem('sipeda_user', JSON.stringify(data));
 
-        showAlert(`Login Berhasil! Selamat datang, ${data.nama}`, 'green');
+        showAlert('Login berhasil! Mengalihkan halaman...', 'success');
 
-        // Pengarahan Halaman Berdasarkan Role
         setTimeout(() => {
-            if (userRole === 'superadmin' || userRole === 'admin') {
-                window.location.href = 'dashboard.html';
+            const role = (data.aksesrole || '').toLowerCase();
+            if (role === 'superadmin' || role === 'admin') {
+                // Diarahkan ke beranda.html
+                window.location.href = 'beranda.html';
             } else {
                 window.location.href = 'portal.html';
             }
@@ -75,33 +64,31 @@ async function handleLogin(event) {
 
     } catch (err) {
         console.error("Detail Error Login:", err);
-        showAlert(`Gagal Login: ${err.message}`, 'red');
-        resetBtn();
+        showAlert(`Gagal Login: ${err.message || 'Terjadi kesalahan sistem'}`, 'error');
+        resetButton();
     }
 }
 
 function showAlert(message, type) {
     const alertBox = document.getElementById('loginAlert');
-    if (!alertBox) return;
-    alertBox.classList.remove('hidden');
-    if (type === 'red') {
-        alertBox.className = 'p-3.5 rounded-xl text-xs font-medium border bg-red-500/10 border-red-500/30 text-red-400';
+    alertBox.classList.remove('hidden', 'bg-red-500/10', 'border-red-500/30', 'text-red-400', 'bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
+    
+    if (type === 'error') {
+        alertBox.className = "mb-6 p-4 rounded-xl text-xs bg-red-500/10 border border-red-500/30 text-red-400 flex items-center gap-2";
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation text-sm"></i> <span>${message}</span>`;
     } else {
-        alertBox.className = 'p-3.5 rounded-xl text-xs font-medium border bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
+        alertBox.className = "mb-6 p-4 rounded-xl text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-2";
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-check text-sm"></i> <span>${message}</span>`;
     }
-    alertBox.innerHTML = `<i class="fa-solid fa-circle-info mr-1.5"></i> ${message}`;
 }
 
-function resetBtn() {
+function resetButton() {
     const btnLogin = document.getElementById('btnLogin');
-    if (!btnLogin) return;
     btnLogin.disabled = false;
-    btnLogin.innerHTML = `<span>Masuk ke Sistem</span> <i class="fa-solid fa-right-to-bracket text-xs"></i>`;
+    btnLogin.innerHTML = `<span>Masuk ke Sistem</span><i class="fa-solid fa-right-to-bracket text-xs"></i>`;
 }
 
-// Hubungkan ke scope window agar dapat dipanggil dari FORM HTML
-window.handleLogin = handleLogin;
-// === FUNGSI TOGGLE LIHAT / SEMBUNYIKAN PASSWORD ===
+// Fungsi Toggle Password
 function togglePassword() {
     const passwordInput = document.getElementById('password');
     const toggleIcon = document.getElementById('toggleIcon');
@@ -109,19 +96,14 @@ function togglePassword() {
     if (!passwordInput || !toggleIcon) return;
 
     if (passwordInput.type === 'password') {
-        // Ubah jadi teks agar password kelihatan
         passwordInput.type = 'text';
         toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
-        toggleIcon.classList.add('text-emerald-400');
+        toggleIcon.classList.add('fa-eye-slash', 'text-emerald-400');
     } else {
-        // Kembalikan jadi password agar tersembunyi
         passwordInput.type = 'password';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.remove('text-emerald-400');
+        toggleIcon.classList.remove('fa-eye-slash', 'text-emerald-400');
         toggleIcon.classList.add('fa-eye');
     }
 }
 
-// Hubungkan ke scope window agar dapat dipanggil dari tombol HTML
 window.togglePassword = togglePassword;
