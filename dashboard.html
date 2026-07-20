@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - SIPEDA RSUD HAT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex">
+
+    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden hidden"></div>
+
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-64 bg-slate-900 text-slate-300 z-50 flex flex-col transition-transform duration-300 transform -translate-x-full lg:translate-x-0 border-r border-slate-800">
+        <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+                    <i class="fa-solid fa-hospital-user text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-white text-base tracking-wide leading-none">SIPEDA</h2>
+                    <span class="text-[10px] text-slate-400 font-medium">RSUD H. AMRI TAMBUNAN</span>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+            <div class="text-[10px] font-bold text-slate-500 uppercase px-3 mb-2 tracking-wider">Menu Utama</div>
+            
+            <a href="#" onclick="switchMenu('dashboard', this)" class="nav-item active flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition">
+                <i class="fa-solid fa-chart-pie w-5 text-center text-sm"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#" onclick="switchMenu('pegawai', this)" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-users w-5 text-center text-sm"></i>
+                <span>Data Pegawai</span>
+            </a>
+
+            <a href="#" onclick="switchMenu('riwayatpekerjaan', this)" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-briefcase w-5 text-center text-sm"></i>
+                <span>Riwayat Pekerjaan</span>
+            </a>
+
+            <a href="#" onclick="switchMenu('riwayatpendidikan', this)" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-user-graduate w-5 text-center text-sm"></i>
+                <span>Riwayat Pendidikan</span>
+            </a>
+
+            <div class="text-[10px] font-bold text-slate-500 uppercase px-3 mt-6 mb-2 tracking-wider">Sistem</div>
+
+            <a href="#" onclick="switchMenu('pengaturan', this)" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-sliders w-5 text-center text-sm"></i>
+                <span>Pengaturan Aplikasi</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800">
+            <div class="flex items-center justify-between bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+                <div class="flex items-center gap-2.5 overflow-hidden">
+                    <div id="adminAvatar" class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                        A
+                    </div>
+                    <div class="truncate">
+                        <p id="adminName" class="text-xs font-bold text-white truncate">Administrator</p>
+                        <span id="adminRole" class="text-[10px] text-emerald-400 font-medium capitalize">Superadmin</span>
+                    </div>
+                </div>
+                <button onclick="handleLogout()" title="Keluar dari sistem" class="text-slate-400 hover:text-red-400 p-1.5 transition">
+                    <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
+        
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-600 hover:text-slate-900 focus:outline-none">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <h1 id="pageTitle" class="text-lg font-bold text-slate-800">Overview Dashboard</h1>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="hidden sm:inline-block px-3 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full border border-slate-200">
+                    <i class="fa-regular fa-calendar-check mr-1.5 text-indigo-600"></i> <span id="currentDate">--</span>
+                </span>
+            </div>
+        </header>
+
+        <main id="mainContent" class="flex-1 p-4 md:p-6 space-y-6">
+            </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app/koneksi.js"></script>
+    <script src="app/app.js"></script>
+</body>
+</html>
