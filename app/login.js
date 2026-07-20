@@ -2,7 +2,6 @@
 
 async function handleLogin(event) {
     event.preventDefault();
-    beranda.html
     const usernameInput = document.getElementById('username').value.trim();
     const passwordInput = document.getElementById('password').value.trim();
     const btnLogin = document.getElementById('btnLogin');
