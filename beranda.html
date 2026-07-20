@@ -353,7 +353,305 @@
             </form>
         </div>
     </div>
+<div class="modal fade" id="modalTambahPegawai" tabindex="-1" aria-labelledby="modalTambahPegawaiLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalTambahPegawaiLabel"><i class="bi bi-person-plus-fill me-2"></i>Tambah Data Pegawai</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formTambahPegawai">
+          <ul class="nav nav-tabs mb-3" id="tabPegawai" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="pribadi-tab" data-bs-toggle="tab" data-bs-target="#tab-pribadi" type="button" role="tab"><i class="bi bi-person me-1"></i>Profil Pribadi</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="keluarga-tab" data-bs-toggle="tab" data-bs-target="#tab-keluarga" type="button" role="tab"><i class="bi bi-people me-1"></i>Keluarga</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="pendidikan-tab" data-bs-toggle="tab" data-bs-target="#tab-pendidikan" type="button" role="tab"><i class="bi bi-mortarboard me-1"></i>Pendidikan</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="pekerjaan-tab" data-bs-toggle="tab" data-bs-target="#tab-pekerjaan" type="button" role="tab"><i class="bi bi-briefcase me-1"></i>Pekerjaan</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="lainnya-tab" data-bs-toggle="tab" data-bs-target="#tab-lainnya" type="button" role="tab"><i class="bi bi-card-checklist me-1"></i>Lainnya & Berkas</button>
+            </li>
+          </ul>
 
+          <div class="tab-content" id="tabPegawaiContent">
+            
+            <div class="tab-pane fade show active" id="tab-pribadi" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label fw-bold">NIK (Primary Key) *</label>
+                  <input type="text" class="form-control" id="nik" required placeholder="Masukkan NIK">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">ID Pegawai</label>
+                  <input type="text" class="form-control" id="id_pegawai" placeholder="ID Pegawai">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-bold">Nama Lengkap *</label>
+                  <input type="text" class="form-control" id="nama" required placeholder="Nama Lengkap">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Tempat Lahir</label>
+                  <input type="text" class="form-control" id="tempat_lahir" placeholder="Tempat Lahir">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Tanggal Lahir</label>
+                  <input type="date" class="form-control" id="tanggal_lahir">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Jenis Kelamin</label>
+                  <select class="form-select" id="jenis_kelamin">
+                    <option value="">-- Pilih Jenis Kelamin --</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Agama</label>
+                  <select class="form-select" id="agama">
+                    <option value="">-- Pilih Agama --</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Kristen">Kristen</option>
+                    <option value="Katolik">Katolik</option>
+                    <option value="Hindu">Hindu</option>
+                    <option value="Buddha">Buddha</option>
+                    <option value="Khonghucu">Khonghucu</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" placeholder="email@domain.com">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">No. Telp / HP</label>
+                  <input type="text" class="form-control" id="no_telp" placeholder="08xxxxxxxxxx">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label">Alamat Lengkap</label>
+                  <textarea class="form-control" id="alamat" rows="2" placeholder="Alamat Domisili"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-keluarga" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">Status Keluarga</label>
+                  <select class="form-select" id="status_keluarga">
+                    <option value="">-- Pilih Status --</option>
+                    <option value="Belum Menikah">Belum Menikah</option>
+                    <option value="Menikah">Menikah</option>
+                    <option value="Duda/Janda">Duda/Janda</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">No. Kartu Keluarga (KK)</label>
+                  <input type="text" class="form-control" id="no_kk" placeholder="Masukkan No. KK">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Nama Pasangan (Suami/Istri)</label>
+                  <input type="text" class="form-control" id="nama_pasangan" placeholder="Nama Pasangan">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Jumlah Anak</label>
+                  <input type="number" class="form-control" id="jumlah_anak" min="0" value="0">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Nama Anak Ke-1</label>
+                  <input type="text" class="form-control" id="anak1" placeholder="Nama Anak 1">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Nama Anak Ke-2</label>
+                  <input type="text" class="form-control" id="anak2" placeholder="Nama Anak 2">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Nama Anak Ke-3</label>
+                  <input type="text" class="form-control" id="anak3" placeholder="Nama Anak 3">
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-pendidikan" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">Jenjang Pendidikan</label>
+                  <select class="form-select" id="jenjang_pendidikan">
+                    <option value="">-- Pilih Jenjang --</option>
+                    <option value="SD">SD</option>
+                    <option value="SMP">SMP</option>
+                    <option value="SMA/SMK">SMA/SMK</option>
+                    <option value="D3">D3</option>
+                    <option value="D4/S1">D4/S1</option>
+                    <option value="S2">S2</option>
+                    <option value="S3">S3</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Fakultas</label>
+                  <input type="text" class="form-control" id="fakultas" placeholder="Fakultas">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Jurusan</label>
+                  <input type="text" class="form-control" id="jurusan" placeholder="Jurusan">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Asal Instansi Pendidikan / Sekolah</label>
+                  <input type="text" class="form-control" id="asal_pendidikan" placeholder="Nama Universitas / Sekolah">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Tanggal Lulus</label>
+                  <input type="date" class="form-control" id="tanggal_lulus">
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-pekerjaan" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">NIP</label>
+                  <input type="text" class="form-control" id="nip" placeholder="NIP Pegawai">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Status Pegawai</label>
+                  <input type="text" class="form-control" id="status_pegawai" placeholder="PNS / PPPK / Non-ASN">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Kelompok Pegawai</label>
+                  <input type="text" class="form-control" id="kelompok_pegawai" placeholder="Kelompok Pegawai">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Golongan</label>
+                  <input type="text" class="form-control" id="golongan" placeholder="Golongan/Ruang">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">TMT Pangkat</label>
+                  <input type="date" class="form-control" id="tmt_pangkat">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Kelompok Jabatan</label>
+                  <input type="text" class="form-control" id="kelompok_jabatan" placeholder="Kelompok Jabatan">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Jabatan</label>
+                  <input type="text" class="form-control" id="jabatan" placeholder="Nama Jabatan">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">TMT Jabatan</label>
+                  <input type="date" class="form-control" id="tmt_jabatan">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Tanggal Masuk</label>
+                  <input type="date" class="form-control" id="tanggal_masuk">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Masa Kerja</label>
+                  <input type="text" class="form-control" id="masa_kerja" placeholder="Contoh: 5 Tahun 2 Bulan">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">BUP (Batas Usia Pensiun)</label>
+                  <input type="number" class="form-control" id="bup" placeholder="58 / 60">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">TMT Pensiun</label>
+                  <input type="date" class="form-control" id="tmt_pensiun">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">TMT CPNS</label>
+                  <input type="date" class="form-control" id="tmtcpns">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Ruangan / Unit Kerja</label>
+                  <input type="text" class="form-control" id="ruangan" placeholder="Nama Ruangan/Unit">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">TMT Nota Tugas</label>
+                  <input type="date" class="form-control" id="tmt_notatugas">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Akses Role</label>
+                  <select class="form-select" id="aksesrole">
+                    <option value="User">User</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Superadmin">Superadmin</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-lainnya" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">No. BPJS Kesehatan</label>
+                  <input type="text" class="form-control" id="no_bpjskesehatan" placeholder="No. BPJS Kesehatan">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">No. Taspen / Ketenagakerjaan</label>
+                  <input type="text" class="form-control" id="no_taspen_ketenagakerjaan" placeholder="No. Taspen / Ketenagakerjaan">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">NPWP</label>
+                  <input type="text" class="form-control" id="npwp" placeholder="Nomor NPWP">
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h6 class="text-primary border-bottom pb-2"><i class="bi bi-paperclip me-1"></i>URL Dokumen / File Upload</h6>
+                </div>
+                
+                <div class="col-md-4">
+                  <label class="form-label">URL Foto</label>
+                  <input type="text" class="form-control" id="upload_foto" placeholder="https://...">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">URL KTP</label>
+                  <input type="text" class="form-control" id="upload_ktp" placeholder="https://...">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">URL KK</label>
+                  <input type="text" class="form-control" id="upload_kk" placeholder="https://...">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">URL Ijazah</label>
+                  <input type="text" class="form-control" id="upload_ijazah" placeholder="https://...">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">URL Transkrip</label>
+                  <input type="text" class="form-control" id="upload_transkrip" placeholder="https://...">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">URL Nota Tugas</label>
+                  <input type="text" class="form-control" id="upload_notatugas" placeholder="https://...">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">URL BPJS Kesehatan</label>
+                  <input type="text" class="form-control" id="upload_bpjskesehatan" placeholder="https://...">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">URL Ketenagakerjaan</label>
+                  <input type="text" class="form-control" id="upload_ketenagakerjaan" placeholder="https://...">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">URL NPWP</label>
+                  <input type="text" class="form-control" id="upload_npwp" placeholder="https://...">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="simpanPegawai()"><i class="bi bi-save me-1"></i>Simpan Data</button>
+      </div>
+    </div>
+  </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app/koneksi.js"></script>
     <script src="app/beranda.js"></script>
