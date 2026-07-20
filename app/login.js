@@ -1,4 +1,5 @@
 // === FILE: app/login.js ===
+// Logika Proses Login & Pengarahan Berdasarkan Hak Akses
 
 async function handleLogin(event) {
     event.preventDefault();
@@ -11,7 +12,7 @@ async function handleLogin(event) {
     if (alertBox) alertBox.classList.add('hidden');
 
     if (!usernameInput || !passwordInput) {
-        showAlert('Harap isi NIK/Email dan Kata Sandi!', 'red');
+        showAlert('Harap isi Email/NIK dan Kata Sandi!', 'red');
         return;
     }
 
@@ -23,11 +24,11 @@ async function handleLogin(event) {
             throw new Error("Koneksi Supabase belum siap. Periksa app/koneksi.js!");
         }
 
-        // Query data pegawai berdasarkan NIK atau Email
+        // Cari pegawai berdasarkan email atau NIK
         const { data, error } = await window.db
             .from('pegawai')
             .select('*')
-            .or(`nik.eq.${usernameInput},email.eq.${usernameInput}`)
+            .or(`email.eq.${usernameInput},nik.eq.${usernameInput}`)
             .maybeSingle();
 
         if (error) {
@@ -35,12 +36,12 @@ async function handleLogin(event) {
         }
 
         if (!data) {
-            showAlert('NIK atau Email tidak terdaftar dalam sistem.', 'red');
+            showAlert('Email atau NIK tidak terdaftar dalam sistem.', 'red');
             resetBtn();
             return;
         }
 
-        // Cek Kata Sandi (Default menggunakan NIK jika kolom password belum diisi)
+        // Verifikasi Kata Sandi
         const passwordDatabase = data.password || data.nik;
 
         if (passwordInput !== passwordDatabase) {
@@ -49,20 +50,23 @@ async function handleLogin(event) {
             return;
         }
 
-        // Simpan Sesi Pengguna
+        // Simpan sesi login ke LocalStorage
+        const userRole = (data.aksesrole || 'user').toLowerCase();
         const userSession = {
             nik: data.nik,
             nama: data.nama,
-            aksesrole: (data.aksesrole || 'user').toLowerCase(),
             email: data.email,
+            aksesrole: userRole,
+            jabatan: data.jabatan,
             foto: data.upload_foto
         };
         localStorage.setItem('sipeda_user', JSON.stringify(userSession));
 
-        showAlert('Login berhasil! Mengalihkan halaman...', 'green');
+        showAlert(`Login Berhasil! Selamat datang, ${data.nama}`, 'green');
 
+        // Pengarahan Halaman Berdasarkan Role
         setTimeout(() => {
-            if (userSession.aksesrole === 'superadmin' || userSession.aksesrole === 'admin') {
+            if (userRole === 'superadmin' || userRole === 'admin') {
                 window.location.href = 'dashboard.html';
             } else {
                 window.location.href = 'portal.html';
@@ -71,7 +75,7 @@ async function handleLogin(event) {
 
     } catch (err) {
         console.error("Detail Error Login:", err);
-        showAlert(`Gagal Verifikasi: ${err.message}`, 'red');
+        showAlert(`Gagal Login: ${err.message}`, 'red');
         resetBtn();
     }
 }
@@ -95,5 +99,5 @@ function resetBtn() {
     btnLogin.innerHTML = `<span>Masuk ke Sistem</span> <i class="fa-solid fa-right-to-bracket text-xs"></i>`;
 }
 
-// PENTING: Daftarkan fungsi ke ranah global window
+// Hubungkan ke scope window agar dapat dipanggil dari FORM HTML
 window.handleLogin = handleLogin;
