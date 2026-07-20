@@ -55,8 +55,8 @@ async function handleLogin(event) {
         setTimeout(() => {
             const role = (data.aksesrole || '').toLowerCase();
             if (role === 'superadmin' || role === 'admin') {
-                // Diarahkan ke beranda.html
-                window.location.href = 'beranda.html';
+                // Diarahkan ke dashboard.html
+                window.location.href = 'dashboard.html';
             } else {
                 window.location.href = 'portal.html';
             }
