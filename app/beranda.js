@@ -1,6 +1,7 @@
-// === FILE: app/dashboard.js ===
+// === FILE: app/beranda.js ===
 
 let dataPegawaiCache = [];
+let filteredPegawaiCache = [];
 let dataPendidikanCache = [];
 let dataPekerjaanCache = [];
 
@@ -13,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const user = JSON.parse(userJson);
-    const role = (user.aksesrole || '').toLowerCase();
 
     // Set Info User di Sidebar
     document.getElementById('userName').textContent = user.nama || user.email || 'Pengguna';
@@ -34,18 +34,15 @@ function handleLogout() {
 
 // === 3. SWITCH TAB MENU DINAMIS ===
 function switchMenu(menuName) {
-    // Hide all sections
     document.getElementById('section-pegawai').classList.add('hidden');
     document.getElementById('section-pendidikan').classList.add('hidden');
     document.getElementById('section-pekerjaan').classList.add('hidden');
 
-    // Reset All Nav Button Styles
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-emerald-600/20');
         btn.classList.add('text-slate-300', 'hover:bg-slate-800/60');
     });
 
-    // Active Tab Logic
     const activeNav = document.getElementById(`nav-${menuName}`);
     const currentTitle = document.getElementById('currentTitle');
 
@@ -79,8 +76,9 @@ async function loadDataPegawai() {
         if (error) throw error;
 
         dataPegawaiCache = data || [];
+        filteredPegawaiCache = [...dataPegawaiCache];
 
-        // Hitung statistik ringkas
+        // Hitung statistik
         document.getElementById('statTotalPegawai').textContent = dataPegawaiCache.length;
         document.getElementById('statPNS').textContent = dataPegawaiCache.filter(p => (p.status_pegawai || '').toLowerCase().includes('pns')).length;
         document.getElementById('statNonASN').textContent = dataPegawaiCache.filter(p => (p.status_pegawai || '').toLowerCase().includes('non') || (p.status_pegawai || '').toLowerCase().includes('kontrak')).length;
@@ -88,7 +86,11 @@ async function loadDataPegawai() {
         const ruanganUnik = new Set(dataPegawaiCache.map(p => p.ruangan).filter(Boolean));
         document.getElementById('statRuangan').textContent = ruanganUnik.size;
 
-        renderPegawaiTable(dataPegawaiCache);
+        // Isi Opsi Filter Jabatan Secara Dinamis
+        populateJabatanOptions(dataPegawaiCache);
+
+        // Render Tabel
+        applyPegawaiFilters();
 
     } catch (err) {
         console.error(err);
@@ -96,10 +98,47 @@ async function loadDataPegawai() {
     }
 }
 
+// Populate Opsi Jabatan dari Database
+function populateJabatanOptions(data) {
+    const selectJabatan = document.getElementById('filterJabatan');
+    if (!selectJabatan) return;
+
+    const jabatanSet = new Set(data.map(p => p.jabatan).filter(Boolean));
+    const currentVal = selectJabatan.value;
+
+    selectJabatan.innerHTML = `<option value="">Semua Jabatan</option>`;
+    Array.from(jabatanSet).sort().forEach(jab => {
+        selectJabatan.innerHTML += `<option value="${jab}">${jab}</option>`;
+    });
+
+    selectJabatan.value = currentVal;
+}
+
+// Filter Multi-Kriteria (Text + Status + Jabatan)
+function applyPegawaiFilters() {
+    const searchVal = (document.getElementById('searchPegawai').value || '').toLowerCase();
+    const statusVal = (document.getElementById('filterStatusPegawai').value || '').toLowerCase();
+    const jabatanVal = (document.getElementById('filterJabatan').value || '').toLowerCase();
+
+    filteredPegawaiCache = dataPegawaiCache.filter(p => {
+        const matchText = (p.nama || '').toLowerCase().includes(searchVal) ||
+                          (p.nik || '').toLowerCase().includes(searchVal) ||
+                          (p.nip || '').toLowerCase().includes(searchVal) ||
+                          (p.ruangan || '').toLowerCase().includes(searchVal);
+
+        const matchStatus = !statusVal || (p.status_pegawai || '').toLowerCase().includes(statusVal);
+        const matchJabatan = !jabatanVal || (p.jabatan || '').toLowerCase().includes(jabatanVal);
+
+        return matchText && matchStatus && matchJabatan;
+    });
+
+    renderPegawaiTable(filteredPegawaiCache);
+}
+
 function renderPegawaiTable(list) {
     const tbody = document.getElementById('tbodyPegawai');
     if (!list || list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">Tidak ada data pegawai.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">Tidak ada data pegawai yang sesuai.</td></tr>`;
         return;
     }
 
@@ -130,7 +169,107 @@ function renderPegawaiTable(list) {
     `).join('');
 }
 
-// === 5. LOAD RIWAYAT PENDIDIKAN FROM SUPABASE ===
+// === 5. EXPORT DATA PEGAWAI TO EXCEL ===
+function exportPegawaiExcel() {
+    const dataToExport = filteredPegawaiCache.length > 0 ? filteredPegawaiCache : dataPegawaiCache;
+
+    if (dataToExport.length === 0) {
+        alert("Tidak ada data pegawai untuk diexport!");
+        return;
+    }
+
+    // Format Data Kolom Excel
+    const formattedData = dataToExport.map((item, idx) => ({
+        "No": idx + 1,
+        "NIK": item.nik || '',
+        "NIP": item.nip || '',
+        "Nama Pegawai": item.nama || '',
+        "Jenis Kelamin": item.jenis_kelamin || '',
+        "Tempat Lahir": item.tempat_lahir || '',
+        "Tanggal Lahir": item.tanggal_lahir || '',
+        "Status Pegawai": item.status_pegawai || '',
+        "Golongan": item.golongan || '',
+        "Jabatan": item.jabatan || '',
+        "Ruangan / Unit": item.ruangan || '',
+        "Jenjang Pendidikan": item.jenjang_pendidikan || '',
+        "Jurusan": item.jurusan || '',
+        "Email": item.email || '',
+        "No Telp / WA": item.no_telp || ''
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Pegawai");
+
+    // Otomatis Atur Lebar Kolom
+    const maxWidths = Object.keys(formattedData[0]).map(key => ({
+        wch: Math.max(key.length + 3, 15)
+    }));
+    worksheet['!cols'] = maxWidths;
+
+    // Download File Excel
+    XLSX.writeFile(workbook, `Data_Pegawai_RSUD_HAT_${new Date().toISOString().slice(0, 10)}.xlsx`);
+}
+
+// === 6. EXPORT DATA PEGAWAI TO PDF ===
+function exportPegawaiPDF() {
+    const dataToExport = filteredPegawaiCache.length > 0 ? filteredPegawaiCache : dataPegawaiCache;
+
+    if (dataToExport.length === 0) {
+        alert("Tidak ada data pegawai untuk diexport!");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('landscape', 'mm', 'a4'); // Format Lanskap A4
+
+    // Judul Dokumen PDF
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text("RSUD H. AMRI TAMBUNAN", 14, 15);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Laporan Master Data Pegawai", 14, 21);
+    doc.text(`Dicetak pada: ${new Date().toLocaleDateString('id-ID')}`, 14, 26);
+
+    // Format Kolom & Baris PDF
+    const tableColumns = ["No", "NIK / NIP", "Nama Pegawai", "Status", "Jabatan", "Ruangan", "Pendidikan", "No Telp"];
+    const tableRows = dataToExport.map((item, idx) => [
+        idx + 1,
+        `${item.nik || '-'}\n${item.nip || 'NIP: -'}`,
+        item.nama || '-',
+        item.status_pegawai || '-',
+        item.jabatan || '-',
+        item.ruangan || '-',
+        `${item.jenjang_pendidikan || ''} ${item.jurusan || ''}`.trim() || '-',
+        item.no_telp || '-'
+    ]);
+
+    // Render Tabel Menggunakan autoTable
+    doc.autoTable({
+        startY: 32,
+        head: [tableColumns],
+        body: tableRows,
+        theme: 'striped',
+        headStyles: { fillColor: [16, 185, 129] }, // Warna Emerald-500
+        styles: { fontSize: 8, cellPadding: 2.5 },
+        columnStyles: {
+            0: { cellWidth: 10 },
+            1: { cellWidth: 35 },
+            2: { cellWidth: 45 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 40 },
+            5: { cellWidth: 35 },
+            6: { cellWidth: 45 },
+            7: { cellWidth: 30 }
+        }
+    });
+
+    // Save File PDF
+    doc.save(`Data_Pegawai_RSUD_HAT_${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
+// === 7. LOAD RIWAYAT PENDIDIKAN FROM SUPABASE ===
 async function loadDataPendidikan() {
     const tbody = document.getElementById('tbodyPendidikan');
     try {
@@ -179,7 +318,7 @@ function renderPendidikanTable(list) {
     `).join('');
 }
 
-// === 6. LOAD RIWAYAT PEKERJAAN FROM SUPABASE ===
+// === 8. LOAD RIWAYAT PEKERJAAN FROM SUPABASE ===
 async function loadDataPekerjaan() {
     const tbody = document.getElementById('tbodyPekerjaan');
     try {
@@ -231,35 +370,9 @@ function renderPekerjaanTable(list) {
     `).join('');
 }
 
-// === 7. FILTER PENCARIAN CLIENT-SIDE ===
-function searchTable(type) {
-    if (type === 'pegawai') {
-        const query = document.getElementById('searchPegawai').value.toLowerCase();
-        const filtered = dataPegawaiCache.filter(p => 
-            (p.nama || '').toLowerCase().includes(query) ||
-            (p.nik || '').toLowerCase().includes(query) ||
-            (p.ruangan || '').toLowerCase().includes(query)
-        );
-        renderPegawaiTable(filtered);
-    } else if (type === 'pendidikan') {
-        const query = document.getElementById('searchPendidikan').value.toLowerCase();
-        const filtered = dataPendidikanCache.filter(p => 
-            (p.nama || '').toLowerCase().includes(query) ||
-            (p.nik || '').toLowerCase().includes(query) ||
-            (p.jenjang_pendidikan || '').toLowerCase().includes(query)
-        );
-        renderPendidikanTable(filtered);
-    } else if (type === 'pekerjaan') {
-        const query = document.getElementById('searchPekerjaan').value.toLowerCase();
-        const filtered = dataPekerjaanCache.filter(p => 
-            (p.nama || '').toLowerCase().includes(query) ||
-            (p.nik || '').toLowerCase().includes(query) ||
-            (p.pejabat || '').toLowerCase().includes(query)
-        );
-        renderPekerjaanTable(filtered);
-    }
-}
-
+// Global Exports
 window.switchMenu = switchMenu;
 window.handleLogout = handleLogout;
-window.searchTable = searchTable;
+window.applyPegawaiFilters = applyPegawaiFilters;
+window.exportPegawaiExcel = exportPegawaiExcel;
+window.exportPegawaiPDF = exportPegawaiPDF;
