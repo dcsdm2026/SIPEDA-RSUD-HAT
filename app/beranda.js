@@ -1,4 +1,4 @@
-// === FILE: app/beranda.js ===
+// === FILE: app/dashboard.js ===
 
 let dataPegawaiCache = [];
 let dataPendidikanCache = [];
