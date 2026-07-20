@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Pegawai - SIPEDA RSUD HAT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/portal.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700 antialiased min-h-screen">
+
+    <nav class="bg-indigo-900 text-white shadow-md sticky top-0 z-40 border-b border-indigo-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow">
+                        <i class="fa-solid fa-hospital-user text-base"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-sm tracking-wide block leading-none">SIPEDA PORTAL</span>
+                        <span class="text-[10px] text-indigo-300">RSUD H. Amri Tambunan</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center gap-2">
+                        <span id="portalUserNama" class="text-xs font-semibold">Memuat...</span>
+                        <span class="text-xs text-indigo-300">|</span>
+                    </div>
+                    <button onclick="handleLogout()" class="px-3 py-1.5 bg-indigo-800 hover:bg-red-600 text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="hidden sm:inline">Keluar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                <img id="userFoto" src="https://ui-avatars.com/api/?name=User&background=4f46e5&color=fff" 
+                     alt="Foto Pegawai" class="w-28 h-28 rounded-2xl object-cover border-2 border-indigo-100 shadow-md">
+
+                <div class="flex-1 text-center md:text-left space-y-2">
+                    <div class="flex flex-col md:flex-row md:items-center gap-2 justify-between">
+                        <div>
+                            <h2 id="userNameHeader" class="text-xl font-bold text-slate-800">--</h2>
+                            <p class="text-xs text-slate-500 mt-0.5">NIK: <span id="userNikHeader" class="font-semibold text-slate-700">--</span> | NIP: <span id="userNipHeader" class="font-semibold text-slate-700">--</span></p>
+                        </div>
+                        <span id="userStatusBadge" class="self-center md:self-start px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                            PNS
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 text-xs">
+                        <div>
+                            <span class="text-slate-400 block">Jabatan</span>
+                            <strong id="userJabatan" class="text-slate-700">--</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Ruangan / Unit Kerja</span>
+                            <strong id="userRuangan" class="text-slate-700">--</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Golongan</span>
+                            <strong id="userGolongan" class="text-slate-700">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-b border-slate-200 flex space-x-4 overflow-x-auto">
+            <button onclick="switchTab('biodata')" id="tab-biodata" class="tab-btn active px-4 py-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-address-card"></i> Biodata Lengkap
+            </button>
+            <button onclick="switchTab('pekerjaan')" id="tab-pekerjaan" class="tab-btn px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-briefcase"></i> Riwayat Pekerjaan
+            </button>
+            <button onclick="switchTab('pendidikan')" id="tab-pendidikan" class="tab-btn px-4 py-3 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-user-graduate"></i> Riwayat Pendidikan
+            </button>
+        </div>
+
+        <div id="content-biodata" class="tab-content bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+            <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Informasi Pribadi & Kontak</h3>
+            <div id="detailBiodataGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                </div>
+        </div>
+
+        <div id="content-pekerjaan" class="tab-content hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="font-bold text-slate-800 text-sm border-b pb-4 mb-4">Riwayat Pekerjaan & Jabatan</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-600">
+                    <thead class="bg-slate-50 text-slate-700 font-semibold uppercase">
+                        <tr>
+                            <th class="p-3">Tahun</th>
+                            <th class="p-3">Uraian Perubahan</th>
+                            <th class="p-3">Mulai - Akhir</th>
+                            <th class="p-3">Pejabat / No. SK</th>
+                            <th class="p-3 text-center">Berkas SK</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableRiwayatPekerjaanBody" class="divide-y divide-slate-100">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="content-pendidikan" class="tab-content hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="font-bold text-slate-800 text-sm border-b pb-4 mb-4">Riwayat Pendidikan Formal</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-600">
+                    <thead class="bg-slate-50 text-slate-700 font-semibold uppercase">
+                        <tr>
+                            <th class="p-3">Jenjang</th>
+                            <th class="p-3">Institusi / Sekolah</th>
+                            <th class="p-3">Fakultas / Jurusan</th>
+                            <th class="p-3">Tanggal Lulus</th>
+                            <th class="p-3 text-center">Ijazah</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableRiwayatPendidikanBody" class="divide-y divide-slate-100">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app/koneksi.js"></script>
+    <script src="app/portal.js"></script>
+</body>
+</html>
