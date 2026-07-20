@@ -486,7 +486,121 @@ async function loadDataPekerjaan() {
         if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-400">Gagal memuat riwayat pekerjaan: ${err.message}</td></tr>`;
     }
 }
+// Fungsi Simpan Pegawai
+async function simpanPegawai() {
+  // Helper untuk mengambil nilai input
+  const getValue = (id) => {
+    const el = document.getElementById(id);
+    return el && el.value.trim() !== "" ? el.value.trim() : null;
+  };
 
+  const nik = getValue('nik');
+  const nama = getValue('nama');
+
+  // Validasi field wajib
+  if (!nik || !nama) {
+    alert("NIK dan Nama Wajib Diisi!");
+    return;
+  }
+
+  // Mengumpulkan seluruh field sesuai tabel database pegawai
+  const dataPegawai = {
+    // 1. Profil Pribadi
+    id_pegawai: getValue('id_pegawai'),
+    nik: nik,
+    nama: nama,
+    tempat_lahir: getValue('tempat_lahir'),
+    tanggal_lahir: getValue('tanggal_lahir'),
+    jenis_kelamin: getValue('jenis_kelamin'),
+    agama: getValue('agama'),
+    alamat: getValue('alamat'),
+    email: getValue('email'),
+    no_telp: getValue('no_telp'),
+
+    // 2. Keluarga
+    status_keluarga: getValue('status_keluarga'),
+    no_kk: getValue('no_kk'),
+    nama_pasangan: getValue('nama_pasangan'),
+    jumlah_anak: getValue('jumlah_anak') ? parseInt(getValue('jumlah_anak')) : 0,
+    anak1: getValue('anak1'),
+    anak2: getValue('anak2'),
+    anak3: getValue('anak3'),
+
+    // 3. Pendidikan
+    jenjang_pendidikan: getValue('jenjang_pendidikan'),
+    fakultas: getValue('fakultas'),
+    jurusan: getValue('jurusan'),
+    asal_pendidikan: getValue('asal_pendidikan'),
+    tanggal_lulus: getValue('tanggal_lulus'),
+
+    // 4. Pekerjaan
+    nip: getValue('nip'),
+    status_pegawai: getValue('status_pegawai'),
+    kelompok_pegawai: getValue('kelompok_pegawai'),
+    golongan: getValue('golongan'),
+    tmt_pangkat: getValue('tmt_pangkat'),
+    kelompok_jabatan: getValue('kelompok_jabatan'),
+    jabatan: getValue('jabatan'),
+    tmt_jabatan: getValue('tmt_jabatan'),
+    tanggal_masuk: getValue('tanggal_masuk'),
+    masa_kerja: getValue('masa_kerja'),
+    bup: getValue('bup') ? parseInt(getValue('bup')) : null,
+    tmt_pensiun: getValue('tmt_pensiun'),
+    tmtcpns: getValue('tmtcpns'),
+    ruangan: getValue('ruangan'),
+    tmt_notatugas: getValue('tmt_notatugas'),
+    aksesrole: getValue('aksesrole') || 'User',
+
+    // 5. Lainnya & Dokumen
+    no_bpjskesehatan: getValue('no_bpjskesehatan'),
+    no_taspen_ketenagakerjaan: getValue('no_taspen_ketenagakerjaan'),
+    npwp: getValue('npwp'),
+    upload_foto: getValue('upload_foto'),
+    upload_ktp: getValue('upload_ktp'),
+    upload_kk: getValue('upload_kk'),
+    upload_ijazah: getValue('upload_ijazah'),
+    upload_transkrip: getValue('upload_transkrip'),
+    upload_notatugas: getValue('upload_notatugas'),
+    upload_bpjskesehatan: getValue('upload_bpjskesehatan'),
+    upload_ketenagakerjaan: getValue('upload_ketenagakerjaan'),
+    upload_npwp: getValue('upload_npwp')
+  };
+
+  try {
+    const { data, error } = await _supabase
+      .from('pegawai')
+      .insert([dataPegawai]);
+
+    if (error) {
+      console.error("Error insert Supabase:", error);
+      alert("Gagal menyimpan data pegawai: " + error.message);
+      return;
+    }
+
+    alert("Data pegawai berhasil ditambahkan!");
+    
+    // Reset Form
+    document.getElementById('formTambahPegawai').reset();
+    
+    // Tutup Modal
+    const modalEl = document.getElementById('modalTambahPegawai');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if (modalInstance) {
+      modalInstance.hide();
+    }
+
+    // Reload / Refresh Data
+    if (typeof loadDataPegawai === 'function') {
+      loadDataPegawai();
+    } else {
+      location.reload();
+    }
+
+  } catch (err) {
+    console.error("Kesalahan Sistem:", err);
+    alert("Terjadi kesalahan sistem saat menyimpan data.");
+  }
+}
 // Export fungsi ke global window
 window.switchMenu = switchMenu;
 window.handleLogout = handleLogout;
