@@ -9,6 +9,10 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex font-sans overflow-x-hidden">
 
@@ -122,18 +126,53 @@
                 </div>
 
                 <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                         <div>
                             <h3 class="text-sm font-bold text-white">Daftar Seluruh Pegawai</h3>
                             <p class="text-xs text-slate-400">Kelola master data pegawai RSUD H. Amri Tambunan</p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <input type="text" id="searchPegawai" oninput="searchTable('pegawai')" placeholder="Cari NIK / Nama / Ruangan..." 
-                                   class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 w-64">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="exportPegawaiExcel()" class="bg-emerald-600/20 hover:bg-emerald-600 border border-emerald-500/40 hover:border-emerald-500 text-emerald-300 hover:text-white font-medium px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-file-excel"></i>
+                                <span>Export Excel</span>
+                            </button>
+                            <button onclick="exportPegawaiPDF()" class="bg-rose-600/20 hover:bg-rose-600 border border-rose-500/40 hover:border-rose-500 text-rose-300 hover:text-white font-medium px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-file-pdf"></i>
+                                <span>Export PDF</span>
+                            </button>
                             <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
                                 <i class="fa-solid fa-plus"></i>
                                 <span>Tambah Pegawai</span>
                             </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-slate-950/60 border border-slate-800 rounded-xl">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Cari Pegawai</label>
+                            <input type="text" id="searchPegawai" oninput="applyPegawaiFilters()" placeholder="NIK / Nama / Ruangan..." 
+                                   class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Status Pegawai</label>
+                            <select id="filterStatusPegawai" onchange="applyPegawaiFilters()" 
+                                    class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                                <option value="">Semua Status</option>
+                                <option value="PNS">PNS</option>
+                                <option value="CPNS">CPNS</option>
+                                <option value="PPPK">PPPK</option>
+                                <option value="Non-ASN">Non-ASN / Kontrak</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Jabatan</label>
+                            <select id="filterJabatan" onchange="applyPegawaiFilters()" 
+                                    class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                                <option value="">Semua Jabatan</option>
+                            </select>
                         </div>
                     </div>
 
@@ -162,7 +201,6 @@
                     </div>
                 </div>
             </section>
-
 
             <section id="section-pendidikan" class="space-y-6 hidden">
                 <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
@@ -206,7 +244,6 @@
                     </div>
                 </div>
             </section>
-
 
             <section id="section-pekerjaan" class="space-y-6 hidden">
                 <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
