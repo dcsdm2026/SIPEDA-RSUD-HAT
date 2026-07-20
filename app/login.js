@@ -101,3 +101,27 @@ function resetBtn() {
 
 // Hubungkan ke scope window agar dapat dipanggil dari FORM HTML
 window.handleLogin = handleLogin;
+// === FUNGSI TOGGLE LIHAT / SEMBUNYIKAN PASSWORD ===
+function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = document.getElementById('toggleIcon');
+
+    if (!passwordInput || !toggleIcon) return;
+
+    if (passwordInput.type === 'password') {
+        // Ubah jadi teks agar password kelihatan
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+        toggleIcon.classList.add('text-emerald-400');
+    } else {
+        // Kembalikan jadi password agar tersembunyi
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.remove('text-emerald-400');
+        toggleIcon.classList.add('fa-eye');
+    }
+}
+
+// Hubungkan ke scope window agar dapat dipanggil dari tombol HTML
+window.togglePassword = togglePassword;
