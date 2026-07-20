@@ -141,7 +141,7 @@
                                 <i class="fa-solid fa-file-pdf"></i>
                                 <span>Export PDF</span>
                             </button>
-                            <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
+                            <button onclick="openModalPegawai()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all shadow-lg shadow-emerald-600/20">
                                 <i class="fa-solid fa-plus"></i>
                                 <span>Tambah Pegawai</span>
                             </button>
@@ -151,7 +151,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-slate-950/60 border border-slate-800 rounded-xl">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Cari Pegawai</label>
-                            <input type="text" id="searchPegawai" oninput="applyPegawaiFilters()" placeholder="NIK / Nama / Ruangan..." 
+                            <input type="text" id="searchPegawai" oninput="applyPegawaiFilters()" placeholder="NIK / NIP / Nama / Ruangan..." 
                                    class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
                         </div>
 
@@ -209,14 +209,6 @@
                             <h3 class="text-sm font-bold text-white">Data Riwayat Pendidikan</h3>
                             <p class="text-xs text-slate-400">Rekam jejak pendidikan formal seluruh pegawai</p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <input type="text" id="searchPendidikan" oninput="searchTable('pendidikan')" placeholder="Cari NIK / Nama / Pendidikan..." 
-                                   class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 w-64">
-                            <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
-                                <i class="fa-solid fa-plus"></i>
-                                <span>Tambah Pendidikan</span>
-                            </button>
-                        </div>
                     </div>
 
                     <div class="overflow-x-auto rounded-xl border border-slate-800">
@@ -229,12 +221,11 @@
                                     <th class="p-4 border-b border-slate-800">Institusi / Asal Sekolah</th>
                                     <th class="p-4 border-b border-slate-800">Tanggal Lulus</th>
                                     <th class="p-4 border-b border-slate-800">Dokumen Ijazah</th>
-                                    <th class="p-4 border-b border-slate-800 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="tbodyPendidikan" class="divide-y divide-slate-800 text-slate-300">
                                 <tr>
-                                    <td colspan="7" class="p-8 text-center text-slate-500">
+                                    <td colspan="6" class="p-8 text-center text-slate-500">
                                         <i class="fa-solid fa-spinner fa-spin text-lg mb-2"></i>
                                         <p>Memuat riwayat pendidikan...</p>
                                     </td>
@@ -252,14 +243,6 @@
                             <h3 class="text-sm font-bold text-white">Data Riwayat Pekerjaan / SK</h3>
                             <p class="text-xs text-slate-400">Riwayat jabatan, kenaikan pangkat, dan uraian perubahan kerja</p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <input type="text" id="searchPekerjaan" oninput="searchTable('pekerjaan')" placeholder="Cari NIK / Nama / Pejabat..." 
-                                   class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 w-64">
-                            <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
-                                <i class="fa-solid fa-plus"></i>
-                                <span>Tambah Pekerjaan</span>
-                            </button>
-                        </div>
                     </div>
 
                     <div class="overflow-x-auto rounded-xl border border-slate-800">
@@ -269,15 +252,14 @@
                                     <th class="p-4 border-b border-slate-800">No</th>
                                     <th class="p-4 border-b border-slate-800">NIK & Nama</th>
                                     <th class="p-4 border-b border-slate-800">Tahun & Uraian</th>
-                                    <th class="p-4 border-b border-slate-800">Masa Kerja (Mulai - Akhir)</th>
+                                    <th class="p-4 border-b border-slate-800">Masa Kerja</th>
                                     <th class="p-4 border-b border-slate-800">Pejabat & No SK</th>
                                     <th class="p-4 border-b border-slate-800">Berkas SK</th>
-                                    <th class="p-4 border-b border-slate-800 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="tbodyPekerjaan" class="divide-y divide-slate-800 text-slate-300">
                                 <tr>
-                                    <td colspan="7" class="p-8 text-center text-slate-500">
+                                    <td colspan="6" class="p-8 text-center text-slate-500">
                                         <i class="fa-solid fa-spinner fa-spin text-lg mb-2"></i>
                                         <p>Memuat riwayat pekerjaan...</p>
                                     </td>
@@ -289,6 +271,87 @@
             </section>
 
         </main>
+    </div>
+
+    <div id="modalPegawai" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-emerald-400"></i> Tambah Pegawai Baru
+                </h3>
+                <button onclick="closeModalPegawai()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="formPegawai" onsubmit="simpanPegawai(event)" class="p-6 overflow-y-auto space-y-4 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">NIK (Primary Key) <span class="text-red-400">*</span></label>
+                        <input type="text" id="inputNik" required placeholder="Masukkan 16 digit NIK" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">NIP</label>
+                        <input type="text" id="inputNip" placeholder="Masukkan NIP (jika PNS)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-slate-400 mb-1 font-medium">Nama Lengkap <span class="text-red-400">*</span></label>
+                        <input type="text" id="inputNama" required placeholder="Nama lengkap pegawai beserta gelar" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Status Pegawai <span class="text-red-400">*</span></label>
+                        <select id="inputStatusPegawai" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                            <option value="PNS">PNS</option>
+                            <option value="CPNS">CPNS</option>
+                            <option value="PPPK">PPPK</option>
+                            <option value="Non-ASN">Non-ASN / Kontrak</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Jabatan</label>
+                        <input type="text" id="inputJabatan" placeholder="Contoh: Perawat Ahli Pertama / Dokter" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Ruangan / Unit Kerja</label>
+                        <input type="text" id="inputRuangan" placeholder="Contoh: Ruang ICU / Rawat Inap" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Akses Role</label>
+                        <select id="inputAksesRole" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                            <option value="user">User / Pegawai</option>
+                            <option value="admin">Admin</option>
+                            <option value="superadmin">Superadmin</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Email</label>
+                        <input type="email" id="inputEmail" placeholder="email@domain.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">No. Telepon / WhatsApp</label>
+                        <input type="text" id="inputNoTelp" placeholder="08xxxxxxxxxx" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-800 flex justify-end gap-3">
+                    <button type="button" onclick="closeModalPegawai()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" id="btnSubmitPegawai" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-2 shadow-lg shadow-emerald-600/20 transition-all">
+                        <i class="fa-solid fa-save"></i>
+                        <span>Simpan Data</span>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
