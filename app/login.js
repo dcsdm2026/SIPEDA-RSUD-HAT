@@ -2,7 +2,7 @@
 
 async function handleLogin(event) {
     event.preventDefault();
-    
+    beranda.html
     const usernameInput = document.getElementById('username').value.trim();
     const passwordInput = document.getElementById('password').value.trim();
     const btnLogin = document.getElementById('btnLogin');
@@ -55,8 +55,8 @@ async function handleLogin(event) {
         setTimeout(() => {
             const role = (data.aksesrole || '').toLowerCase();
             if (role === 'superadmin' || role === 'admin') {
-                // Diarahkan ke dashboard.html
-                window.location.href = 'dashboard.html';
+                // Diarahkan ke beranda.html
+                window.location.href = 'beranda.html';
             } else {
                 window.location.href = 'portal.html';
             }
