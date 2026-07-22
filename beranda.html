@@ -475,13 +475,19 @@
     }
 
     function prosesLogout(event) {
-      event.preventDefault();
-      if (confirm("Apakah Anda yakin ingin keluar dari aplikasi SIPEDA?")) {
-        localStorage.removeItem('supabase.auth.token'); // bersihkan token jika ada
-        sessionStorage.clear();
-        window.location.href = "index.html";
-      }
-    }
+  if (event) event.preventDefault(); // Mencegah tindakan default tombol/link
+
+  // 1. Hapus semua data sesi / localStorage
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+  } catch (err) {
+    console.error("Gagal membersihkan storage:", err);
+  }
+
+  // 2. Arahkan layar utama ke index.html (halaman login Anda)
+  window.top.location.href = "index.html"; 
+}
 
     // Tampilkan Tanggal Hari Ini
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', {
