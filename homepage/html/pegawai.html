@@ -1,75 +1,314 @@
-<div class="space-y-6">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            
-            <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
-                <div class="relative w-full sm:w-80">
-                    <input type="text" id="searchPegawai" oninput="handleSearch()" placeholder="Cari NIK, NIP, Nama, Jabatan..." 
-                           class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                </div>
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Data Pegawai - SIPEDA RSUD HAT</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <label class="text-xs font-semibold text-slate-500 whitespace-nowrap">Tampilkan:</label>
-                    <select id="limitPerPage" onchange="changeLimit()" 
-                            class="w-full sm:w-auto bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        <option value="50" selected>50 Data</option>
-                        <option value="100">100 Data</option>
-                        <option value="all">Semua Data</option>
-                    </select>
-                </div>
-            </div>
+  <style>
+    :root {
+      --bg-body: #0f172a;
+      --bg-card: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.08);
+    }
 
-            <div class="flex items-center gap-3 w-full lg:w-auto justify-end">
-                <button onclick="refreshData()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-sm transition">
-                    <i class="fa-solid fa-rotate mr-1.5"></i> Refresh
-                </button>
-                <button onclick="openModalTambah()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl text-sm transition shadow-sm shadow-indigo-600/30">
-                    <i class="fa-solid fa-plus mr-2"></i> Tambah Pegawai
-                </button>
-            </div>
-        </div>
+    [data-bs-theme="light"] {
+      --bg-body: #f1f5f9;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      padding: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .card-filter {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .table th {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background-color: rgba(0, 0, 0, 0.06);
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .table td {
+      padding: 12px;
+      vertical-align: middle;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .stacked-text-primary {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .stacked-text-secondary {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .modal-iframe {
+      width: 100%;
+      height: 75vh;
+      border: none;
+      border-radius: 0 0 12px 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid p-0">
+    
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+      <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-people-fill text-primary me-2"></i>Master Data Pegawai</h4>
+        <p class="text-muted small mb-0">Kelola dan pantau seluruh data pegawai RSUD H. Amri Tambunan secara terpusat.</p>
+      </div>
+      <div>
+        <button class="btn btn-primary btn-sm rounded-3 shadow-sm px-3 fw-semibold" onclick="bukaModalTambahPegawai()">
+          <i class="bi bi-person-plus-fill me-1"></i> Tambah Pegawai
+        </button>
+      </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-600">
-                <thead class="bg-slate-800 text-slate-200 uppercase text-xs font-semibold tracking-wider">
-                    <tr>
-                        <th class="p-4 text-center w-12">NO</th>
-                        <th class="p-4">NIK / NIP</th>
-                        <th class="p-4">Nama Lengkap / Ruangan</th>
-                        <th class="p-4">Golongan / Jabatan</th>
-                        <th class="p-4">Kelompok Tenaga / Status</th>
-                        <th class="p-4">Pendidikan / Masa Kerja</th>
-                        <th class="p-4 text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="tablePegawaiBody" class="divide-y divide-slate-200 bg-white">
-                    </tbody>
-            </table>
+    <div class="row row-cols-2 row-cols-md-5 g-3 mb-4">
+      <div class="col">
+        <div class="stat-card d-flex align-items-center gap-3">
+          <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div>
+            <span class="text-muted small d-block">Total Pegawai</span>
+            <h4 class="fw-bold mb-0" id="statTotal">0</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stat-card d-flex align-items-center gap-3">
+          <div class="stat-icon bg-success bg-opacity-10 text-success">
+            <i class="bi bi-person-check-fill"></i>
+          </div>
+          <div>
+            <span class="text-muted small d-block">Aktif</span>
+            <h4 class="fw-bold mb-0 text-success" id="statAktif">0</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stat-card d-flex align-items-center gap-3">
+          <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+            <i class="bi bi-person-gear"></i>
+          </div>
+          <div>
+            <span class="text-muted small d-block">Mutasi</span>
+            <h4 class="fw-bold mb-0 text-warning" id="statMutasi">0</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stat-card d-flex align-items-center gap-3">
+          <div class="stat-icon bg-info bg-opacity-10 text-info">
+            <i class="bi bi-person-badge-fill"></i>
+          </div>
+          <div>
+            <span class="text-muted small d-block">Pensiun</span>
+            <h4 class="fw-bold mb-0 text-info" id="statPensiun">0</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stat-card d-flex align-items-center gap-3">
+          <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+            <i class="bi bi-person-x-fill"></i>
+          </div>
+          <div>
+            <span class="text-muted small d-block">Resign</span>
+            <h4 class="fw-bold mb-0 text-danger" id="statResign">0</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-filter mb-4">
+      <div class="row g-2 align-items-center">
+        
+        <div class="col-12 col-md-3">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" id="filterSearch" class="form-control" placeholder="Cari NIK, NIP, atau Nama...">
+          </div>
         </div>
 
-        <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p id="paginationInfo" class="text-xs font-medium text-slate-500">
-                Menampilkan 0 data
-            </p>
-            <div id="paginationControls" class="flex items-center gap-2">
-                </div>
+        <div class="col-6 col-md-2">
+          <select id="filterStatus" class="form-select form-select-sm">
+            <option value="">-- Semua Status --</option>
+            <option value="Aktif">Aktif</option>
+            <option value="Mutasi">Mutasi</option>
+            <option value="Pensiun">Pensiun</option>
+            <option value="Resign">Resign</option>
+          </select>
         </div>
-    </div>
-</div>
 
-<div id="modalViewPegawai" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center border-b pb-3">
-            <h3 class="text-lg font-bold text-slate-800">Detail Informasi Pegawai</h3>
-            <button onclick="closeModalView()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+        <div class="col-6 col-md-2">
+          <select id="filterKelompok" class="form-select form-select-sm">
+            <option value="">-- Kelompok Tenaga --</option>
+            <option value="Medis">Medis</option>
+            <option value="Keperawatan">Keperawatan</option>
+            <option value="Kebidanan">Kebidanan</option>
+            <option value="Kefarmasian">Kefarmasian</option>
+            <option value="Penunjang Medis">Penunjang Medis</option>
+            <option value="Non Medis / Administrasi">Non Medis / Administrasi</option>
+          </select>
         </div>
-        <div id="modalViewContent" class="space-y-3 text-sm text-slate-600">
-            </div>
-        <div class="text-right border-t pt-3">
-            <button onclick="closeModalView()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl text-xs transition">Tutup</button>
+
+        <div class="col-6 col-md-2">
+          <select id="filterJabatan" class="form-select form-select-sm">
+            <option value="">-- Semua Jabatan --</option>
+            <option value="Dokter Spesialis">Dokter Spesialis</option>
+            <option value="Dokter Umum">Dokter Umum</option>
+            <option value="Perawat">Perawat</option>
+            <option value="Bidan">Bidan</option>
+            <option value="Apoteker">Apoteker</option>
+            <option value="Staf Administrasi">Staf Administrasi</option>
+          </select>
         </div>
+
+        <div class="col-6 col-md-1">
+          <select id="filterJK" class="form-select form-select-sm">
+            <option value="">-- JK --</option>
+            <option value="Laki-Laki">Laki-Laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-2 d-flex gap-1 justify-content-end">
+          <button class="btn btn-outline-secondary btn-sm" onclick="resetFilters()" title="Reset Filter">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+          <button class="btn btn-success btn-sm" onclick="exportExcel()" title="Export Excel">
+            <i class="bi bi-file-earmark-excel-fill me-1"></i> Excel
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="exportPDF()" title="Export PDF">
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i> PDF
+          </button>
+        </div>
+
+      </div>
     </div>
-</div>
+
+    <div class="table-container shadow-sm mb-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th style="width: 50px;" class="text-center">NO</th>
+              <th style="width: 170px;">NIK / NIP</th>
+              <th>NAMA / RUANGAN</th>
+              <th>PANGKAT / JABATAN</th>
+              <th style="width: 170px;">MASUK RS / MASA KERJA</th>
+              <th style="width: 160px;">JENIS KELAMIN / AGAMA</th>
+              <th style="width: 120px;" class="text-center">AKSI</th>
+            </tr>
+          </thead>
+          <tbody id="tablePegawaiBody">
+            <tr>
+              <td colspan="7" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                Memuat data pegawai...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+      <div class="text-muted small" id="paginationInfo">
+        Menampilkan 0 - 0 dari 0 data
+      </div>
+      <nav>
+        <ul class="pagination pagination-sm mb-0" id="paginationList">
+          </ul>
+      </nav>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="modalPegawaiForm" tabindex="-1" aria-labelledby="modalPegawaiLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-primary text-white py-2 px-3">
+          <h6 class="modal-title fw-bold" id="modalPegawaiLabel">
+            <i class="bi bi-person-plus-fill me-2"></i>Form Master Pegawai
+          </h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0">
+          <iframe id="iframePegawaiForm" class="modal-iframe" src="about:blank"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <script src="../../app/koneksi.js"></script>
+  <script src="../js/pegawai.js"></script>
+</body>
+</html>
