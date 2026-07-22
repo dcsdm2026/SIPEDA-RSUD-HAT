@@ -1,9 +1,10 @@
-/**
- * Modul Master Data Pegawai
- * Location: Homepage/js/pegawai.js
- */
-// Ambil supabaseClient dari window global
-const supabaseClient = window.supabaseClient || window.db || (window.parent && window.parent.supabaseClient);
+// Memastikan variabel supabaseClient terdefinisi dari window global
+const supabaseClient = window.supabaseClient || window.db || (window.parent && (window.parent.supabaseClient || window.parent.db));
+
+// Cek jika client belum tersedia
+if (!supabaseClient) {
+    console.error("❌ Supabase Client belum siap/tidak ditemukan. Periksa koneksi.js!");
+}
 // Global State
 let currentPage = 1;
 const pageSize = 50; // 50 data per halaman
