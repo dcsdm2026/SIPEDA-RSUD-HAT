@@ -1,1 +1,261 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Riwayat Pendidikan - SIPEDA RSUD HAT</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
+  <style>
+    :root {
+      --bg-body: #0f172a;
+      --bg-card: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-bs-theme="light"] {
+      --bg-body: #f1f5f9;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      padding: 1.5rem;
+    }
+
+    .card-custom {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-responsive {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table-custom {
+      color: var(--text-main);
+      margin-bottom: 0;
+    }
+
+    .table-custom th {
+      background-color: rgba(255, 255, 255, 0.05);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border-color);
+      padding: 12px 16px;
+    }
+
+    .table-custom td {
+      padding: 12px 16px;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.9rem;
+    }
+
+    .badge-jenjang {
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid p-0">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+      <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-mortarboard-fill text-primary me-2"></i>Data Riwayat Pendidikan</h4>
+        <p class="text-secondary small mb-0">Kelola dan pantau riwayat pendidikan pegawai RSUD HAT</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-success btn-sm" onclick="exportToExcel()">
+          <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+        </button>
+        <button class="btn btn-outline-danger btn-sm" onclick="exportToPDF()">
+          <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="openModalTambah()">
+          <i class="bi bi-plus-lg me-1"></i> Tambah Riwayat
+        </button>
+      </div>
+    </div>
+
+    <div class="card card-custom p-3 mb-4">
+      <div class="row g-2">
+        <div class="col-md-4">
+          <label class="form-label small text-secondary">Cari NIK / Nama</label>
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-transparent border-secondary-subtle"><i class="bi bi-search"></i></span>
+            <input type="text" id="searchInput" class="form-control" placeholder="Ketik NIK atau Nama Pegawai..." oninput="handleSearch()">
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label small text-secondary">Jenjang</label>
+          <select id="filterJenjang" class="form-select form-select-sm" onchange="applyFilters()">
+            <option value="">Semua Jenjang</option>
+            <option value="SD">SD</option>
+            <option value="SMP">SMP</option>
+            <option value="SMA/SMK">SMA/SMK</option>
+            <option value="D3">D3</option>
+            <option value="D4/S1">D4 / S1</option>
+            <option value="S2">S2</option>
+            <option value="S3">S3</option>
+            <option value="Profesi/Spesialis">Profesi / Spesialis</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small text-secondary">Fakultas</label>
+          <select id="filterFakultas" class="form-select form-select-sm" onchange="applyFilters()">
+            <option value="">Semua Fakultas</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small text-secondary">Jurusan</label>
+          <select id="filterJurusan" class="form-select form-select-sm" onchange="applyFilters()">
+            <option value="">Semua Jurusan</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-custom">
+      <div class="table-responsive">
+        <table class="table table-custom align-middle" id="tableRiwayatPendidikan">
+          <thead>
+            <tr>
+              <th style="width: 50px;" class="text-center">No</th>
+              <th>Nama / NIK</th>
+              <th>Jenjang / Asal Sekolah</th>
+              <th>Fakultas / Jurusan</th>
+              <th>Kepala Pendidik / Tgl Lulus</th>
+              <th style="width: 130px;" class="text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyRiwayatPendidikan">
+            <tr>
+              <td colspan="6" class="text-center py-4 text-secondary">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>Memuat data...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center p-3 border-top border-secondary-subtle">
+        <span class="small text-secondary" id="infoPagination">Menampilkan 0 data</span>
+        <nav>
+          <ul class="pagination pagination-sm mb-0" id="paginationList"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalFormPendidikan" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content card-custom">
+        <div class="modal-header border-bottom border-secondary-subtle">
+          <h6 class="modal-title fw-bold" id="modalFormTitle"><i class="bi bi-mortarboard me-2"></i>Form Riwayat Pendidikan</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="formRiwayatPendidikan" onsubmit="saveDataPendidikan(event)">
+          <div class="modal-body">
+            <input type="hidden" id="id_riwayatpendidikan">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small required">NIK Pegawai</label>
+                <input type="text" id="formNik" class="form-control form-control-sm" required placeholder="Masukkan NIK">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small required">Nama Pegawai</label>
+                <input type="text" id="formNama" class="form-control form-control-sm" required placeholder="Masukkan Nama Lengkap">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small required">Jenjang Pendidikan</label>
+                <select id="formJenjang" class="form-select form-select-sm" required>
+                  <option value="">-- Pilih Jenjang --</option>
+                  <option value="SD">SD</option>
+                  <option value="SMP">SMP</option>
+                  <option value="SMA/SMK">SMA/SMK</option>
+                  <option value="D3">D3</option>
+                  <option value="D4/S1">D4 / S1</option>
+                  <option value="S2">S2</option>
+                  <option value="S3">S3</option>
+                  <option value="Profesi/Spesialis">Profesi / Spesialis</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small required">Asal Sekolah / Universitas</label>
+                <input type="text" id="formAsalPendidikan" class="form-control form-control-sm" required placeholder="Contoh: Universitas Indonesia">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small">Fakultas</label>
+                <input type="text" id="formFakultas" class="form-control form-control-sm" placeholder="Contoh: Kedokteran">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small">Jurusan</label>
+                <input type="text" id="formJurusan" class="form-control form-control-sm" placeholder="Contoh: Keperawatan">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small">Kepala Pendidik / Rektor</label>
+                <input type="text" id="formKepalaPendidik" class="form-control form-control-sm" placeholder="Nama Kepala Sekolah / Rektor">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small">Tanggal Lulus</label>
+                <input type="date" id="formTanggalLulus" class="form-control form-control-sm">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-top border-secondary-subtle">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-primary btn-sm" id="btnSave">Simpan Data</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalDetailPendidikan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content card-custom">
+        <div class="modal-header border-bottom border-secondary-subtle">
+          <h6 class="modal-title fw-bold"><i class="bi bi-info-circle me-2"></i>Detail Riwayat Pendidikan</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-3" id="detailBody">
+          </div>
+        <div class="modal-footer border-top border-secondary-subtle">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <script src="../../app/koneksi.js"></script>
+
+  <script src="../js/riwayatpendidikan.js"></script>
+</body>
+</html>
