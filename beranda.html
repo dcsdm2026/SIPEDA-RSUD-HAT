@@ -5,83 +5,165 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIPEDA RSUD HAT - Beranda Utama</title>
   
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   
   <style>
     :root {
-      --sidebar-width: 260px;
-      --primary-color: #0d6efd;
-      --dark-bg: #1e293b;
+      --sidebar-width: 270px;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --sidebar-bg: #0f172a;
+      --sidebar-card-bg: #1e293b;
+      --text-muted: #94a3b8;
     }
     
-    body {
-      overflow-x: hidden;
-      background-color: #f8f9fa;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    * {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* Layout Container */
+    body {
+      overflow-x: hidden;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Layout Wrapper */
     .wrapper {
       display: flex;
-      width: 100%;
+      width: 100vw;
       height: 100vh;
       overflow: hidden;
     }
 
-    /* Sidebar Styling */
+    /* Sidebar Base */
     #sidebar {
       min-width: var(--sidebar-width);
       max-width: var(--sidebar-width);
       height: 100vh;
-      background: var(--dark-bg);
+      background: var(--sidebar-bg);
       color: #fff;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
       z-index: 1000;
+      box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
     }
 
+    /* Header Logo */
     #sidebar .sidebar-header {
-      padding: 20px 18px;
-      background: rgba(0, 0, 0, 0.2);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 24px 20px;
+      background: rgba(15, 23, 42, 0.8);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    #sidebar ul.components {
-      padding: 15px 10px;
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Menu Container */
+    #sidebar .menu-container {
+      padding: 16px 12px;
       flex-grow: 1;
+      overflow-y: auto;
     }
 
-    #sidebar ul li {
-      margin-bottom: 5px;
+    .menu-header {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      padding: 12px 12px 6px 12px;
     }
 
-    #sidebar ul li a {
-      padding: 12px 15px;
-      font-size: 0.95rem;
+    /* Nav Item Links */
+    .nav-link-custom {
+      padding: 11px 14px;
+      font-size: 0.92rem;
+      font-weight: 500;
       display: flex;
       align-items: center;
       color: #cbd5e1;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-link-custom:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-link-custom.active {
+      color: #fff;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .nav-link-custom i.icon-main {
+      font-size: 1.2rem;
+      margin-right: 12px;
+      width: 22px;
+      text-align: center;
+    }
+
+    /* Chevron Dynamic Icon */
+    .chevron-icon {
+      margin-left: auto;
+      font-size: 0.8rem;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-link-custom[aria-expanded="true"] .chevron-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Dropdown Submenu Modern */
+    .submenu {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 4px;
+      margin: 2px 0 6px 0;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .submenu .nav-link-custom {
+      padding-left: 44px;
+      font-size: 0.88rem;
+      margin-bottom: 2px;
+      position: relative;
+    }
+
+    .submenu .nav-link-custom::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #64748b;
+      transform: translateY(-50%);
       transition: all 0.2s ease;
     }
 
-    #sidebar ul li a:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    #sidebar ul li a.active {
-      color: #fff;
-      background: var(--primary-color);
-      font-weight: 600;
-    }
-
-    #sidebar ul li a i {
-      margin-right: 12px;
-      font-size: 1.2rem;
+    .submenu .nav-link-custom:hover::before,
+    .submenu .nav-link-custom.active::before {
+      background-color: #60a5fa;
+      box-shadow: 0 0 8px #60a5fa;
     }
 
     /* Main Content Area */
@@ -90,17 +172,16 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-      background: #f8f9fa;
+      background: #f8fafc;
     }
 
-    /* Dynamic Frame */
     .content-frame {
       width: 100%;
       height: 100%;
       border: none;
     }
 
-    /* Mobile Responsive Styles */
+    /* Responsive Mobile */
     @media (max-width: 768px) {
       #sidebar {
         margin-left: calc(-1 * var(--sidebar-width));
@@ -120,68 +201,71 @@
   <div class="wrapper">
     <nav id="sidebar">
       <div class="sidebar-header d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center">
-          <i class="bi bi-hospital fs-3 text-primary me-2"></i>
+        <div class="d-flex align-items-center gap-3">
+          <div class="brand-icon">
+            <i class="bi bi-hospital fs-5 text-white"></i>
+          </div>
           <div>
-            <h6 class="fw-bold mb-0 text-white">SIPEDA</h6>
+            <h6 class="fw-bold mb-0 text-white" style="letter-spacing: 0.5px;">SIPEDA</h6>
             <small class="text-muted" style="font-size: 11px;">RSUD HAT</small>
           </div>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-light d-md-none" id="sidebarClose">
-          <i class="bi bi-x-lg"></i>
+        <button type="button" class="btn btn-sm text-white d-md-none p-0" id="sidebarClose">
+          <i class="bi bi-x-lg fs-5"></i>
         </button>
       </div>
 
-      <ul class="list-unstyled components">
-        <li class="px-3 pb-2 text-uppercase text-muted fw-bold" style="font-size: 11px; letter-spacing: 1px;">
-          Menu Utama
-        </li>
+      <div class="menu-container">
         
-        <li>
-          <a href="pegawai.html" target="contentFrame" class="nav-menu active" onclick="setActive(this)">
-            <i class="bi bi-people-fill"></i> Data Pegawai
-          </a>
-        </li>
+        <div class="menu-header">Menu Utama</div>
 
-        <li>
-          <a href="riwayatpendidikan.html" target="contentFrame" class="nav-menu" onclick="setActive(this)">
-            <i class="bi bi-mortarboard-fill"></i> Riwayat Pendidikan
-          </a>
-        </li>
+        <a href="dashboard.html" target="contentFrame" class="nav-link-custom active" onclick="setActive(this)">
+          <i class="bi bi-grid-1x2-fill icon-main"></i>
+          <span>Dashboard</span>
+        </a>
 
-        <li>
-          <a href="riwayatpekerjaan.html" target="contentFrame" class="nav-menu" onclick="setActive(this)">
-            <i class="bi bi-briefcase-fill"></i> Riwayat Pekerjaan
+        <a class="nav-link-custom" data-bs-toggle="collapse" href="#sdmSubmenu" role="button" aria-expanded="false" aria-controls="sdmSubmenu">
+          <i class="bi bi-people-fill icon-main"></i>
+          <span>Sumber Daya Manusia</span>
+          <i class="bi bi-chevron-down chevron-icon"></i>
+        </a>
+        
+        <div class="collapse submenu" id="sdmSubmenu">
+          <a href="pegawai.html" target="contentFrame" class="nav-link-custom" onclick="setActive(this)">
+            <span>Master Data</span>
           </a>
-        </li>
-
-        <li class="px-3 pt-3 pb-2 text-uppercase text-muted fw-bold" style="font-size: 11px; letter-spacing: 1px;">
-          Pengaturan & Sesi
-        </li>
-
-        <li>
-          <a href="pengaturan.html" target="contentFrame" class="nav-menu" onclick="setActive(this)">
-            <i class="bi bi-gear-fill"></i> Pengaturan
+          <a href="riwayatpendidikan.html" target="contentFrame" class="nav-link-custom" onclick="setActive(this)">
+            <span>Riwayat Pendidikan</span>
           </a>
-        </li>
-
-        <li>
-          <a href="#" class="text-danger mt-2" onclick="prosesLogout(event)">
-            <i class="bi bi-box-arrow-right text-danger"></i> Logout
+          <a href="riwayatpekerjaan.html" target="contentFrame" class="nav-link-custom" onclick="setActive(this)">
+            <span>Riwayat Pekerjaan</span>
           </a>
-        </li>
-      </ul>
+        </div>
+
+        <div class="menu-header mt-3">Sistem & Sesi</div>
+
+        <a href="pengaturan.html" target="contentFrame" class="nav-link-custom" onclick="setActive(this)">
+          <i class="bi bi-sliders icon-main"></i>
+          <span>Pengaturan</span>
+        </a>
+
+        <a href="#" class="nav-link-custom text-danger mt-2" onclick="prosesLogout(event)">
+          <i class="bi bi-box-arrow-right icon-main text-danger"></i>
+          <span>Logout</span>
+        </a>
+
+      </div>
     </nav>
 
     <div id="main-content">
-      <nav class="navbar navbar-light bg-white border-bottom d-md-none px-3">
-        <button type="button" id="sidebarCollapse" class="btn btn-primary btn-sm">
+      <nav class="navbar navbar-light bg-white border-bottom d-md-none px-3 py-2">
+        <button type="button" id="sidebarCollapse" class="btn btn-primary btn-sm rounded-3">
           <i class="bi bi-list fs-5 me-1"></i> Menu
         </button>
         <span class="fw-bold text-primary">SIPEDA RSUD HAT</span>
       </nav>
 
-      <iframe name="contentFrame" id="contentFrame" src="pegawai.html" class="content-frame"></iframe>
+      <iframe name="contentFrame" id="contentFrame" src="dashboard.html" class="content-frame"></iframe>
     </div>
   </div>
 
@@ -205,12 +289,26 @@
       });
     }
 
-    // Mengatur Menu Aktif saat Diklik
+    // Mengatur Menu Aktif & Visual Indicator
     function setActive(element) {
-      document.querySelectorAll('.nav-menu').forEach(item => item.classList.remove('active'));
+      // Hapus class active dari semua menu
+      document.querySelectorAll('.nav-link-custom').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // Tambahkan class active ke menu yang diklik
       element.classList.add('active');
 
-      // Tutup otomatis sidebar pada mode mobile setelah memilih menu
+      // Jika yang diklik adalah submenu, buka parent dropdown-nya
+      const parentCollapse = element.closest('.collapse');
+      if (parentCollapse) {
+        const toggleBtn = document.querySelector(`[href="#${parentCollapse.id}"]`);
+        if (toggleBtn) {
+          toggleBtn.classList.add('active');
+        }
+      }
+
+      // Auto close sidebar di tampilan mobile setelah diklik
       if (window.innerWidth <= 768) {
         sidebar.classList.remove('active');
       }
@@ -220,11 +318,8 @@
     function prosesLogout(event) {
       event.preventDefault();
       if (confirm("Apakah Anda yakin ingin keluar dari aplikasi SIPEDA?")) {
-        // Membersihkan sesi lokal
         localStorage.clear();
         sessionStorage.clear();
-        
-        // Mengalihkan kembali ke halaman login
         window.location.href = "login.html";
       }
     }
