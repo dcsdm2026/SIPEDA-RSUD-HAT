@@ -367,4 +367,162 @@
 
           <div class="tab-pane fade" id="tab-keluarga" role="tabpanel">
             <div class="section-title"><i class="bi bi-people-fill me-2"></i>Informasi Data Keluarga</div>
-            <div class="
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Status Keluarga / Pernikahan</label>
+                <select class="form-select" id="status_keluarga" name="status_keluarga">
+                  <option value="">-- Pilih --</option>
+                  <option value="Belum Menikah">Belum Menikah</option>
+                  <option value="Menikah">Menikah</option>
+                  <option value="Duda/Janda">Duda / Janda</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">No. Kartu Keluarga (KK)</label>
+                <input type="text" class="form-control" id="no_kk" name="no_kk">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Nama Suami / Istri</label>
+                <input type="text" class="form-control" id="nama_pasangan" name="nama_pasangan">
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label">Jumlah Anak</label>
+                <input type="number" class="form-control" id="jumlah_anak" name="jumlah_anak" min="0" value="0">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Nama Anak Ke-1</label>
+                <input type="text" class="form-control" id="anak1" name="anak1">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Nama Anak Ke-2</label>
+                <input type="text" class="form-control" id="anak2" name="anak2">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Nama Anak Ke-3</label>
+                <input type="text" class="form-control" id="anak3" name="anak3">
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="tab-file" role="tabpanel">
+            <div class="section-title"><i class="bi bi-file-earmark-text-fill me-2"></i>Upload / Tautan Berkas Dokumen</div>
+            <p class="text-muted small">Masukkan link berkas/URL dokumen yang tersimpan atau pilih file untuk diunggah.</p>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Upload Foto Pegawai</label>
+                <input type="text" class="form-control mb-1" id="upload_foto" name="upload_foto" placeholder="URL Foto Pegawai">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Upload KTP</label>
+                <input type="text" class="form-control mb-1" id="upload_ktp" name="upload_ktp" placeholder="URL KTP">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Upload KK</label>
+                <input type="text" class="form-control mb-1" id="upload_kk" name="upload_kk" placeholder="URL Kartu Keluarga">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Upload Ijazah</label>
+                <input type="text" class="form-control mb-1" id="upload_ijazah" name="upload_ijazah" placeholder="URL Ijazah">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Upload Transkrip Nilai</label>
+                <input type="text" class="form-control mb-1" id="upload_transkrip" name="upload_transkrip" placeholder="URL Transkrip">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Upload Nota Tugas</label>
+                <input type="text" class="form-control mb-1" id="upload_notatugas" name="upload_notatugas" placeholder="URL Nota Tugas">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Upload BPJS Kesehatan</label>
+                <input type="text" class="form-control mb-1" id="upload_bpjskesehatan" name="upload_bpjskesehatan" placeholder="URL BPJS Kesehatan">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Upload Ketenagakerjaan/Taspen</label>
+                <input type="text" class="form-control mb-1" id="upload_ketenagakerjaan" name="upload_ketenagakerjaan" placeholder="URL Ketenagakerjaan">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Upload NPWP</label>
+                <input type="text" class="form-control mb-1" id="upload_npwp" name="upload_npwp" placeholder="URL NPWP">
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="tab-rpendidikan" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center section-title">
+              <span><i class="bi bi-journal-bookmark-fill me-2"></i>Daftar Riwayat Pendidikan</span>
+              <button type="button" class="btn btn-sm btn-outline-primary" id="btnRefreshRPendidikan">
+                <i class="bi bi-arrow-clockwise me-1"></i> Muat Ulang
+              </button>
+            </div>
+            
+            <div id="noticeRPendidikan" class="alert alert-info small d-none">
+              <i class="bi bi-info-circle me-1"></i> Simpan NIK Pegawai terlebih dahulu untuk mengelola riwayat pendidikan secara otomatis.
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-dark table-hover table-bordered table-custom align-middle">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Jenjang</th>
+                    <th>Instansi / Sekolah</th>
+                    <th>Fakultas / Jurusan</th>
+                    <th>Tanggal Lulus</th>
+                    <th>Kepala Pendidikan</th>
+                    <th>Dokumen Ijazah</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyRiwayatPendidikan">
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-3">Pilih / Masukkan NIK untuk melihat riwayat pendidikan.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="tab-rpekerjaan" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center section-title">
+              <span><i class="bi bi-clock-history me-2"></i>Daftar Riwayat Pekerjaan</span>
+              <button type="button" class="btn btn-sm btn-outline-primary" id="btnRefreshRPekerjaan">
+                <i class="bi bi-arrow-clockwise me-1"></i> Muat Ulang
+              </button>
+            </div>
+
+            <div id="noticeRPekerjaan" class="alert alert-info small d-none">
+              <i class="bi bi-info-circle me-1"></i> Simpan NIK Pegawai terlebih dahulu untuk mengelola riwayat pekerjaan secara otomatis.
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-dark table-hover table-bordered table-custom align-middle">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Tahun</th>
+                    <th>Uraian Perubahan</th>
+                    <th>Periode (Mulai - Akhir)</th>
+                    <th>Gaji Pokok</th>
+                    <th>Pejabat / Nomor SK</th>
+                    <th>Dokumen SK</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyRiwayatPekerjaan">
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-3">Pilih / Masukkan NIK untuk melihat riwayat pekerjaan.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div> </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/koneksi.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/tambahpegawai.js"></script>
+</body>
+</html>
