@@ -2,7 +2,8 @@
  * Modul Master Data Pegawai
  * Location: Homepage/js/pegawai.js
  */
-
+// Ambil supabaseClient dari window global
+const supabaseClient = window.supabaseClient || window.db || (window.parent && window.parent.supabaseClient);
 // Global State
 let currentPage = 1;
 const pageSize = 50; // 50 data per halaman
