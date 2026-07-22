@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tambah / Edit Data Pegawai - SIPEDA RSUD HAT</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-body: #0f172a;
+      --bg-card: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-bs-theme="light"] {
+      --bg-body: #f1f5f9;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      padding-bottom: 50px;
+    }
+
+    .card-custom {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .nav-tabs .nav-link {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 0.75rem 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #38bdf8 !important;
+      background-color: transparent !important;
+      border-bottom: 3px solid #38bdf8 !important;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .form-control, .form-select {
+      background-color: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+      background-color: rgba(15, 23, 42, 0.8);
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.25);
+      color: var(--text-main);
+    }
+
+    .tab-content {
+      padding: 20px 0;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .table-custom {
+      color: var(--text-main);
+      font-size: 0.85rem;
+    }
+
+    .table-custom th {
+      background-color: rgba(15, 23, 42, 0.8);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 card-custom p-3">
+      <div>
+        <h4 class="fw-bold mb-1" id="pageTitle">
+          <i class="bi bi-person-plus-fill text-primary me-2"></i>Form Master Data Pegawai
+        </h4>
+        <p class="text-muted small mb-0">Kelola data profil, kepegawaian, pendidikan, keluarga, serta riwayat pegawai.</p>
+      </div>
+      <div>
+        <a href="pegawai.html" class="btn btn-outline-secondary btn-sm me-2">
+          <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
+        </a>
+        <button type="button" class="btn btn-primary btn-sm px-4" id="btnSimpanUtama">
+          <i class="bi bi-floppy-fill me-1"></i> Simpan Pegawai
+        </button>
+      </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div class="card-custom p-4">
+      <ul class="nav nav-tabs nav-fill" id="pegawaiTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-profil-tab" data-bs-toggle="tab" data-bs-target="#tab-profil" type="button" role="tab">
+            <i class="bi bi-person-badge me-1"></i> Profil
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-kepegawaian-tab" data-bs-toggle="tab" data-bs-target="#tab-kepegawaian" type="button" role="tab">
+            <i class="bi bi-briefcase me-1"></i> Data Kepegawaian
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-pendidikan-tab" data-bs-toggle="tab" data-bs-target="#tab-pendidikan" type="button" role="tab">
+            <i class="bi bi-mortarboard me-1"></i> Pendidikan
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-keluarga-tab" data-bs-toggle="tab" data-bs-target="#tab-keluarga" type="button" role="tab">
+            <i class="bi bi-people me-1"></i> Keluarga
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-file-tab" data-bs-toggle="tab" data-bs-target="#tab-file" type="button" role="tab">
+            <i class="bi bi-file-earmark-arrow-up me-1"></i> File Pendukung
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-rpendidikan-tab" data-bs-toggle="tab" data-bs-target="#tab-rpendidikan" type="button" role="tab">
+            <i class="bi bi-journal-bookmark me-1"></i> Riwayat Pendidikan
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-rpekerjaan-tab" data-bs-toggle="tab" data-bs-target="#tab-rpekerjaan" type="button" role="tab">
+            <i class="bi bi-clock-history me-1"></i> Riwayat Pekerjaan
+          </button>
+        </li>
+      </ul>
+
+      <form id="formTambahPegawai">
+        <div class="tab-content" id="pegawaiTabContent">
+          
+          <div class="tab-pane fade show active" id="tab-profil" role="tabpanel">
+            <div class="section-title"><i class="bi bi-info-circle me-2"></i>Informasi Identitas Diri</div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">NIK (Nomor Induk Kependudukan) *</label>
+                <input type="text" class="form-control" id="nik" name="nik" required placeholder="Masukkan 16 Digit NIK">
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">Nama Lengkap *</label>
+                <input type="text" class="form-control" id="nama" name="nama" required placeholder="Nama Lengkap beserta Gelar">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">NIP</label>
+                <input type="text" class="form-control" id="nip" name="nip" placeholder="Nomor Induk Pegawai">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Tempat Lahir</label>
+                <input type="text" class="form-control" id="tempat_lahir" name="tempat_lahir">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tanggal Lahir</label>
+                <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Jenis Kelamin</label>
+                <select class="form-select" id="jenis_kelamin" name="jenis_kelamin">
+                  <option value="">-- Pilih --</option>
+                  <option value="Laki-laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Agama</label>
+                <select class="form-select" id="agama" name="agama">
+                  <option value="">-- Pilih --</option>
+                  <option value="Islam">Islam</option>
+                  <option value="Kristen">Kristen</option>
+                  <option value="Katolik">Katolik</option>
+                  <option value="Hindu">Hindu</option>
+                  <option value="Buddha">Buddha</option>
+                  <option value="Khonghucu">Khonghucu</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="contoh@rsud.go.id">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">No. Telepon / Whatsapp</label>
+                <input type="text" class="form-control" id="no_telp" name="no_telp" placeholder="08xxxxxxxxxx">
+              </div>
+
+              <div class="col-md-8">
+                <label class="form-label">Alamat Lengkap</label>
+                <textarea class="form-control" id="alamat" name="alamat" rows="2" placeholder="Alamat Domisili"></textarea>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Akses Role System</label>
+                <select class="form-select" id="aksesrole" name="aksesrole">
+                  <option value="Pegawai">Pegawai</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Superadmin">Superadmin</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="tab-kepegawaian" role="tabpanel">
+            <div class="section-title"><i class="bi bi-briefcase-fill me-2"></i>Status & Jabatan Kepegawaian</div>
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label">Status Pegawai</label>
+                <select class="form-select" id="status_pegawai" name="status_pegawai">
+                  <option value="">-- Pilih Status --</option>
+                  <option value="PNS">PNS</option>
+                  <option value="CPNS">CPNS</option>
+                  <option value="PPPK">PPPK</option>
+                  <option value="Honorer / Non-ASN">Honorer / Non-ASN</option>
+                  <option value="Kontrak">Kontrak</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Kelompok Pegawai</label>
+                <input type="text" class="form-control" id="kelompok_pegawai" name="kelompok_pegawai" placeholder="e.g. Medis, Nakes, Administrasi">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Golongan / Ruang</label>
+                <input type="text" class="form-control" id="golongan" name="golongan" placeholder="e.g. III/a">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">TMT Pangkat</label>
+                <input type="date" class="form-control" id="tmt_pangkat" name="tmt_pangkat">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Kelompok Jabatan</label>
+                <input type="text" class="form-control" id="kelompok_jabatan" name="kelompok_jabatan" placeholder="e.g. Fungsional / Struktural">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Nama Jabatan</label>
+                <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="e.g. Dokter Ahli Pertama">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">TMT Jabatan</label>
+                <input type="date" class="form-control" id="tmt_jabatan" name="tmt_jabatan">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Ruangan / Unit Kerja</label>
+                <input type="text" class="form-control" id="ruangan" name="ruangan" placeholder="e.g. IGD, Poliklinik, Rekam Medis">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tanggal Masuk Kerja</label>
+                <input type="date" class="form-control" id="tanggal_masuk" name="tanggal_masuk">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Masa Kerja</label>
+                <input type="text" class="form-control" id="masa_kerja" name="masa_kerja" placeholder="e.g. 5 Tahun 2 Bulan">
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label">BUP (Batas Usia Pensiun)</label>
+                <input type="number" class="form-control" id="bup" name="bup" placeholder="e.g. 58 / 60">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">TMT CPNS</label>
+                <input type="date" class="form-control" id="tmtcpns" name="tmtcpns">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">TMT Pensiun</label>
+                <input type="date" class="form-control" id="tmt_pensiun" name="tmt_pensiun">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">TMT Nota Tugas</label>
+                <input type="date" class="form-control" id="tmt_notatugas" name="tmt_notatugas">
+              </div>
+
+              <div class="section-title mt-4"><i class="bi bi-card-heading me-2"></i>Nomor Kartu & Identitas Resmi</div>
+              <div class="col-md-4">
+                <label class="form-label">No. BPJS Kesehatan</label>
+                <input type="text" class="form-control" id="no_bpjskesehatan" name="no_bpjskesehatan">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">No. Taspen / Ketenagakerjaan</label>
+                <input type="text" class="form-control" id="no_taspen" name="no_taspen" placeholder="No. Taspen / BPJS Ketenagakerjaan">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">NPWP</label>
+                <input type="text" class="form-control" id="npwp" name="npwp">
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="tab-pendidikan" role="tabpanel">
+            <div class="section-title"><i class="bi bi-mortarboard-fill me-2"></i>Pendidikan Terakhir / Utama</div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Jenjang Pendidikan</label>
+                <select class="form-select" id="jenjang_pendidikan" name="jenjang_pendidikan">
+                  <option value="">-- Pilih Jenjang --</option>
+                  <option value="SMA/SMK">SMA / SMK</option>
+                  <option value="D3">D3</option>
+                  <option value="D4">D4</option>
+                  <option value="S1">S1</option>
+                  <option value="S2">S2</option>
+                  <option value="S3">S3</option>
+                  <option value="Profesi">Spesialis / Profesi</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Asal Instansi / Universitas</label>
+                <input type="text" class="form-control" id="asal_pendidikan" name="asal_pendidikan" placeholder="e.g. Universitas Sumatera Utara">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Fakultas</label>
+                <input type="text" class="form-control" id="fakultas" name="fakultas" placeholder="e.g. Kedokteran">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Jurusan / Program Studi</label>
+                <input type="text" class="form-control" id="jurusan" name="jurusan" placeholder="e.g. Ilmu Keperawatan">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Tanggal Lulus</label>
+                <input type="date" class="form-control" id="tanggal_lulus" name="tanggal_lulus">
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="tab-keluarga" role="tabpanel">
+            <div class="section-title"><i class="bi bi-people-fill me-2"></i>Informasi Data Keluarga</div>
+            <div class="
