@@ -301,7 +301,86 @@
       </div>
     </div>
   </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const btnTambah = document.getElementById('btnTambahPegawai');
+  const iframeForm = document.getElementById('iframePegawaiForm');
+  const modalLabel = document.getElementById('modalPegawaiLabel');
+  const modalElement = document.getElementById('modalPegawaiForm');
 
+  // Inisialisasi Modal Bootstrap jika modalElement ada
+  let modalInstance = null;
+  if (modalElement && typeof bootstrap !== 'undefined') {
+    modalInstance = new bootstrap.Modal(modalElement);
+  }
+
+  // 1. EVENT KLIK TOMBOL "TAMBAH PEGAWAI"
+  if (btnTambah) {
+    btnTambah.addEventListener('click', function () {
+      // Ubah judul modal
+      if (modalLabel) {
+        modalLabel.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Form Tambah Pegawai Baru';
+      }
+
+      // Set URL iframe mengarah ke tambahpegawai.html
+      if (iframeForm) {
+        iframeForm.src = 'tambahpegawai.html';
+      }
+
+      // Tampilkan modal
+      if (modalInstance) {
+        modalInstance.show();
+      }
+    });
+  }
+
+  // 2. CLEARED / RESET IFRAME SAAT MODAL DITUTUP
+  if (modalElement) {
+    modalElement.addEventListener('hidden.bs.modal', function () {
+      if (iframeForm) {
+        iframeForm.src = 'about:blank'; // Bersihkan isi iframe agar tidak memberatkan memori
+      }
+    });
+  }
+
+  // 3. LISTEN PESAN DARI IFRAME (Jika Form Selesai Disimpan, Otomatis Tutup Modal & Refresh Data)
+  window.addEventListener('message', function (event) {
+    if (event.data && event.data.action === 'closeModalAndReload') {
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+      // Memuat ulang data pegawai jika fungsi loadPegawai / fetchtersedia
+      if (typeof muatDataPegawai === 'function') {
+        muatDataPegawai();
+      } else if (typeof loadPegawai === 'function') {
+        loadPegawai();
+      } else {
+        window.location.reload();
+      }
+    }
+  });
+});
+
+// 4. FUNGSI EDIT PEGAWAI (Dapat dipanggil dari tombol Edit pada tabel)
+function openEditPegawai(nik) {
+  const iframeForm = document.getElementById('iframePegawaiForm');
+  const modalLabel = document.getElementById('modalPegawaiLabel');
+  const modalElement = document.getElementById('modalPegawaiForm');
+
+  if (modalLabel) {
+    modalLabel.innerHTML = `<i class="bi bi-pencil-square me-2"></i>Form Edit Data Pegawai (NIK: ${nik})`;
+  }
+
+  if (iframeForm) {
+    iframeForm.src = `tambahpegawai.html?nik=${encodeURIComponent(nik)}`;
+  }
+
+  if (modalElement && typeof bootstrap !== 'undefined') {
+    const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    modalInstance.show();
+  }
+}
+</script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -311,7 +390,5 @@
   <script src="../../app/koneksi.js"></script>
 
   <script src="../js/pegawai.js"></script>
-</body>
-</html>
 </body>
 </html>
