@@ -72,6 +72,11 @@
       padding: 4px 8px;
       border-radius: 6px;
     }
+
+    .required::after {
+      content: " *";
+      color: #ef4444;
+    }
   </style>
 </head>
 <body>
@@ -178,15 +183,20 @@
         <form id="formRiwayatPendidikan" onsubmit="saveDataPendidikan(event)">
           <div class="modal-body">
             <input type="hidden" id="id_riwayatpendidikan">
+            
+            <datalist id="listPegawaiAuto"></datalist>
+
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label small required">NIK Pegawai</label>
-                <input type="text" id="formNik" class="form-control form-control-sm" required placeholder="Masukkan NIK">
+                <label class="form-label small required">Cari NIK / Nama Pegawai</label>
+                <input type="text" id="formNik" class="form-control form-control-sm" list="listPegawaiAuto" required placeholder="Ketik NIK atau Nama Pegawai..." autocomplete="off">
+                <div class="form-text small text-secondary">Pilih dari rekomendasi yang muncul.</div>
               </div>
               <div class="col-md-6">
                 <label class="form-label small required">Nama Pegawai</label>
-                <input type="text" id="formNama" class="form-control form-control-sm" required placeholder="Masukkan Nama Lengkap">
+                <input type="text" id="formNama" class="form-control form-control-sm" required placeholder="Nama terisi otomatis" readonly>
               </div>
+
               <div class="col-md-6">
                 <label class="form-label small required">Jenjang Pendidikan</label>
                 <select id="formJenjang" class="form-select form-select-sm" required>
