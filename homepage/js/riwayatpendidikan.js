@@ -1,19 +1,20 @@
 // === FILE: Homepage/js/riwayatpendidikan.js ===
 
-// Global State
+// State Variables
 let rawPendidikanData = [];
 let filteredPendidikanData = [];
+let masterPegawaiData = []; // Cache master pegawai untuk auto-complete
 let currentPage = 1;
-const itemsPerPage = 50; // 50 data per halaman
+const itemsPerPage = 50; // Max 50 data per halaman
 
 let modalFormInstance = null;
 let modalDetailInstance = null;
 
-// Ambil Client Supabase secara aman
+// Fungsi helper ambil instance client Supabase
 function getSupabaseClient() {
     const client = window.supabaseClient || window.db || (window.parent && (window.parent.supabaseClient || window.parent.db));
     if (!client) {
-        console.error("❌ Supabase Client belum diinisialisasi. Periksa koneksi.js!");
+        console.error("❌ Supabase Client belum terdeteksi. Periksa koneksi.js!");
     }
     return client;
 }
@@ -23,10 +24,70 @@ document.addEventListener("DOMContentLoaded", () => {
     modalFormInstance = new bootstrap.Modal(document.getElementById('modalFormPendidikan'));
     modalDetailInstance = new bootstrap.Modal(document.getElementById('modalDetailPendidikan'));
     
+    // Muat data utama & master pegawai
     fetchRiwayatPendidikan();
+    fetchMasterPegawai();
+
+    // Event Listener untuk Auto-Complete NIK -> Nama Pegawai
+    setupNikPegawaiAutocomplete();
 });
 
-// 1. Ambil Data dari Supabase (Diurutkan berdasarkan Abjad NAMA A-Z)
+// 1. Ambil Data Master Pegawai untuk Auto-complete Input Modal
+async function fetchMasterPegawai() {
+    const supabaseClient = getSupabaseClient();
+    if (!supabaseClient) return;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('pegawai')
+            .select('nik, nama')
+            .order('nama', { ascending: true });
+
+        if (error) throw error;
+
+        masterPegawaiData = data || [];
+        
+        // Render Datalist Opsi Pegawai
+        const datalist = document.getElementById('listPegawaiAuto');
+        if (datalist) {
+            datalist.innerHTML = '';
+            masterPegawaiData.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.nik;
+                opt.label = `${p.nama} (${p.nik})`;
+                datalist.appendChild(opt);
+            });
+        }
+    } catch (err) {
+        console.error("Gagal memuat master pegawai:", err.message);
+    }
+}
+
+// 2. Listener Auto-fill Nama ketika Ketik / Pilih NIK Pegawai
+function setupNikPegawaiAutocomplete() {
+    const inputNik = document.getElementById('formNik');
+    const inputNama = document.getElementById('formNama');
+
+    if (!inputNik) return;
+
+    inputNik.addEventListener('input', (e) => {
+        const val = e.target.value.trim().toLowerCase();
+        
+        // Cari di data master pegawai berdasarkan NIK atau Nama
+        const match = masterPegawaiData.find(p => 
+            p.nik.toLowerCase() === val || p.nama.toLowerCase() === val
+        );
+
+        if (match) {
+            inputNik.value = match.nik;   // Set nilai NIK
+            inputNama.value = match.nama; // Auto-fill Nama
+        } else {
+            inputNama.value = ''; // Reset jika tidak match
+        }
+    });
+}
+
+// 3. Ambil Data Riwayat Pendidikan dari Supabase (Urut Abjad Nama A-Z)
 async function fetchRiwayatPendidikan() {
     const supabaseClient = getSupabaseClient();
     if (!supabaseClient) return;
@@ -40,11 +101,10 @@ async function fetchRiwayatPendidikan() {
         </tr>`;
 
     try {
-        // Query ke tabel riwayat_pendidikan diurutkan berdasarkan nama (Ascending)
         const { data, error } = await supabaseClient
             .from('riwayat_pendidikan')
             .select('*')
-            .order('nama', { ascending: true });
+            .order('nama', { ascending: true }); // Mengurutkan abjad Nama A-Z
 
         if (error) throw error;
 
@@ -63,7 +123,7 @@ async function fetchRiwayatPendidikan() {
     }
 }
 
-// 2. Isi Opsi Filter Fakultas & Jurusan secara Dinamis
+// 4. Opsi Filter Dinamis Fakultas & Jurusan
 function populateDynamicFilters() {
     const fakultasSet = new Set();
     const jurusanSet = new Set();
@@ -79,16 +139,16 @@ function populateDynamicFilters() {
     filterFakultas.innerHTML = '<option value="">Semua Fakultas</option>';
     filterJurusan.innerHTML = '<option value="">Semua Jurusan</option>';
 
-    Array.from(fakultasSet).sort().forEach(fakultas => {
-        filterFakultas.innerHTML += `<option value="${fakultas}">${fakultas}</option>`;
+    Array.from(fakultasSet).sort().forEach(f => {
+        filterFakultas.innerHTML += `<option value="${f}">${f}</option>`;
     });
 
-    Array.from(jurusanSet).sort().forEach(jurusan => {
-        filterJurusan.innerHTML += `<option value="${jurusan}">${jurusan}</option>`;
+    Array.from(jurusanSet).sort().forEach(j => {
+        filterJurusan.innerHTML += `<option value="${j}">${j}</option>`;
     });
 }
 
-// 3. Terapkan Pencarian & Filter
+// 5. Terapkan Filter & Pencarian
 function applyFilters() {
     const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
     const jenjangValue = document.getElementById('filterJenjang').value;
@@ -115,7 +175,7 @@ function handleSearch() {
     applyFilters();
 }
 
-// 4. Render Tabel Data (Pagination 50 items/page)
+// 6. Render Tabel dengan Pagination 50 Data per Halaman
 function renderTable() {
     const tbody = document.getElementById('tbodyRiwayatPendidikan');
     tbody.innerHTML = '';
@@ -132,7 +192,6 @@ function renderTable() {
         return;
     }
 
-    // Hitung Slice untuk Pagination 50 data
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, filteredPendidikanData.length);
     const paginatedItems = filteredPendidikanData.slice(startIndex, endIndex);
@@ -181,7 +240,7 @@ function renderTable() {
     renderPagination(filteredPendidikanData.length);
 }
 
-// 5. Render Pagination Component
+// 7. Render Navigasi Halaman (Pagination)
 function renderPagination(totalItems) {
     const paginationList = document.getElementById('paginationList');
     paginationList.innerHTML = '';
@@ -189,7 +248,7 @@ function renderPagination(totalItems) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     if (totalPages <= 1) return;
 
-    // Tombol Previous
+    // Previous Button
     const prevLi = document.createElement('li');
     prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
     prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">&laquo;</a>`;
@@ -205,7 +264,7 @@ function renderPagination(totalItems) {
         }
     }
 
-    // Tombol Next
+    // Next Button
     const nextLi = document.createElement('li');
     nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
     nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">&raquo;</a>`;
@@ -219,7 +278,7 @@ function changePage(page) {
     renderTable();
 }
 
-// 6. Modal Operations (Tambah / Edit / Save)
+// 8. Operasi Modal (Tambah / Edit / Simpan)
 function openModalTambah() {
     document.getElementById('formRiwayatPendidikan').reset();
     document.getElementById('id_riwayatpendidikan').value = '';
@@ -269,7 +328,7 @@ async function saveDataPendidikan(e) {
 
     try {
         if (id) {
-            // Update
+            // Update Data
             const { error } = await supabaseClient
                 .from('riwayat_pendidikan')
                 .update(payload)
@@ -277,7 +336,7 @@ async function saveDataPendidikan(e) {
 
             if (error) throw error;
         } else {
-            // Create
+            // Tambah Data Baru
             const { error } = await supabaseClient
                 .from('riwayat_pendidikan')
                 .insert([payload]);
@@ -295,7 +354,7 @@ async function saveDataPendidikan(e) {
     }
 }
 
-// 7. Modal Detail
+// 9. Modal Detail Data
 function openDetailModal(id) {
     const item = rawPendidikanData.find(d => String(d.id_riwayatpendidikan) === String(id));
     if (!item) return;
@@ -304,9 +363,9 @@ function openDetailModal(id) {
     detailBody.innerHTML = `
         <table class="table table-sm table-borderless mb-0">
             <tr><th style="width: 40%;">NIK</th><td>: ${escapeHtml(item.nik || '-')}</td></tr>
-            <tr><th>Nama</th><td>: ${escapeHtml(item.nama || '-')}</td></tr>
+            <tr><th>Nama Pegawai</th><td>: ${escapeHtml(item.nama || '-')}</td></tr>
             <tr><th>Jenjang</th><td>: ${escapeHtml(item.jenjang_pendidikan || '-')}</td></tr>
-            <tr><th>Asal Sekolah / Univ</th><td>: ${escapeHtml(item.asal_pendidikan || '-')}</td></tr>
+            <tr><th>Asal Sekolah / PT</th><td>: ${escapeHtml(item.asal_pendidikan || '-')}</td></tr>
             <tr><th>Fakultas</th><td>: ${escapeHtml(item.fakultas || '-')}</td></tr>
             <tr><th>Jurusan</th><td>: ${escapeHtml(item.jurusan || '-')}</td></tr>
             <tr><th>Kepala Pendidik / Rektor</th><td>: ${escapeHtml(item.kepala_pendidikan || '-')}</td></tr>
@@ -316,9 +375,9 @@ function openDetailModal(id) {
     modalDetailInstance.show();
 }
 
-// 8. Hapus Data (Delete)
+// 10. Hapus Data
 async function deleteDataPendidikan(id, nama) {
-    if (!confirm(`Apakah Anda yakin ingin menghapus data riwayat pendidikan untuk ${nama}?`)) return;
+    if (!confirm(`Apakah Anda yakin ingin menghapus data pendidikan untuk ${nama}?`)) return;
 
     const supabaseClient = getSupabaseClient();
     if (!supabaseClient) return;
@@ -336,7 +395,7 @@ async function deleteDataPendidikan(id, nama) {
     }
 }
 
-// 9. Export ke Excel
+// 11. Export Excel
 function exportToExcel() {
     if (filteredPendidikanData.length === 0) {
         alert("Tidak ada data untuk diexport!");
@@ -361,7 +420,7 @@ function exportToExcel() {
     XLSX.writeFile(workbook, `Riwayat_Pendidikan_RSUD_HAT_${new Date().toISOString().slice(0, 10)}.xlsx`);
 }
 
-// 10. Export ke PDF
+// 12. Export PDF
 function exportToPDF() {
     if (filteredPendidikanData.length === 0) {
         alert("Tidak ada data untuk diexport!");
